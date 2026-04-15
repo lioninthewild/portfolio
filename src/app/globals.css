@@ -1,0 +1,28 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap');
+
+:root {
+  --background: #f9f9f9;
+  --foreground: #323232;
+}
+
+body {
+  font-family: 'Inter', sans-serif;
+  color: var(--foreground);
+  background: var(--background);
+}
+
+@layer utilities {
+  .text-purple-accent {
+    color: #800080;
+  }
+  .bg-purple-accent {
+    background-color: #800080;
+  }
+  .border-purple-accent {
+    border-color: #800080;
+  }
+}
