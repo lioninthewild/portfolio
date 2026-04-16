@@ -107,9 +107,9 @@ export function About() {
           </div>
           <a
             href="/kashvi/programming-fundamentals"
-            className="text-white font-medium text-sm flex items-center gap-2 group"
+            className="inline-flex items-center gap-2 text-white font-medium text-sm hover:text-purple-accent transition-colors cursor-pointer"
           >
-            View Course
+            <span>View Course</span>
             <svg
               className="w-4 h-4 group-hover:translate-x-1 transition-transform"
               fill="currentColor"

@@ -25,12 +25,12 @@ export default function CourseOverviewPage() {
   ];
 
   const weeks = [
-    "Week 1: Building Blocks of Programming",
-    "Week 2: Data Types and Variables",
-    "Week 3: Control Flow and Logic",
+    "Week 1: Building Blocks: Rewiring the brain",
+    "Week 2: Talking to the Machine: First Real Coding",
+    "Week 3: Building Logic: Making Decisions and Repetitions",
     "Week 4: Functions and Modular Programming",
-    "Week 5: Data Structures Basics",
-    "Week 6: Project Development",
+    "Week 5: Current Trends: How the tech world is moving",
+    "Week 6: Productivity with AI: Using AI without being dumb",
   ];
 
   return (
