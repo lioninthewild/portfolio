@@ -14,6 +14,7 @@ interface ThemeContextType {
   theme: Theme;
   toggleTheme: () => void;
 }
+createContext;
 
 const ThemeContext = createContext<ThemeContextType | undefined>(undefined);
 
@@ -22,10 +23,6 @@ export function ThemeProvider({ children }: { children: ReactNode }) {
   const [mounted, setMounted] = useState(false);
 
   useEffect(() => {
-    const saved = localStorage.getItem("theme") as Theme;
-    if (saved) {
-      setTheme(saved);
-    }
     setMounted(true);
   }, []);
 
