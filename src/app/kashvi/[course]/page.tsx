@@ -19,18 +19,18 @@ export default function CourseOverviewPage() {
   ];
 
   const courseIsNot = [
-    "A quick crash course - we go deep into concepts",
     "Just about syntax - you'll learn the why behind the what",
-    "Theoretical only - you'll build real projects",
+    "Theory heavy - you'll actively build and experiment every session",
+    "A fixed, rigid syllabus - parts of the course adapt based on students interests",
   ];
 
   const weeks = [
-    "Week 1: Building Blocks: Rewiring the brain",
-    "Week 2: Talking to the Machine: First Real Coding",
+    "Week 1: Building Blocks: Rewiring The Brain",
+    "Week 2: Talking To The Machine: First Real Coding",
     "Week 3: Building Logic: Making Decisions and Repetitions",
     "Week 4: Functions and Modular Programming",
-    "Week 5: Current Trends: How the tech world is moving",
-    "Week 6: Productivity with AI: Using AI without being dumb",
+    "Week 5: Current Trends: How The Tech World Is Moving",
+    "Week 6: Productivity With AI",
   ];
 
   return (
