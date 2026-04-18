@@ -15,77 +15,71 @@ export function About() {
             machine learning and data science, I love turning complex problems
             into elegant solutions.
           </p>
-          
+
           <hr className="border-t border-gray-200 my-4" />
-          
+
           <div className="mb-4">
             <h4 className="text-sm font-bold text-black uppercase tracking-wide mb-3">
               Skills
             </h4>
             <div className="flex flex-wrap gap-2">
               <span className="px-3 py-1 text-xs rounded-full bg-surface-container-highest text-on-surface-variant">
-                Skill 1
+                JavaScript
               </span>
               <span className="px-3 py-1 text-xs rounded-full bg-surface-container-highest text-on-surface-variant">
-                Skill 2
+                React
               </span>
               <span className="px-3 py-1 text-xs rounded-full bg-surface-container-highest text-on-surface-variant">
-                Skill 3
+                Git & Github
               </span>
               <span className="px-3 py-1 text-xs rounded-full bg-surface-container-highest text-on-surface-variant">
-                Skill 4
+                C
               </span>
               <span className="px-3 py-1 text-xs rounded-full bg-surface-container-highest text-on-surface-variant">
-                Skill 5
+                Python
               </span>
               <span className="px-3 py-1 text-xs rounded-full bg-surface-container-highest text-on-surface-variant">
-                Skill 6
+                Data Visualization
               </span>
               <span className="px-3 py-1 text-xs rounded-full bg-surface-container-highest text-on-surface-variant">
-                Skill 7
+                Algorithms
               </span>
               <span className="px-3 py-1 text-xs rounded-full bg-surface-container-highest text-on-surface-variant">
-                Skill 8
+                APIs
               </span>
               <span className="px-3 py-1 text-xs rounded-full bg-surface-container-highest text-on-surface-variant">
-                Skill 9
+                Machine Learning
               </span>
             </div>
           </div>
-          
+
           <hr className="border-t border-gray-200 my-4" />
-          
+
           <div>
             <h4 className="text-sm font-bold text-black uppercase tracking-wide mb-3">
               Interests
             </h4>
             <div className="flex flex-wrap gap-2">
               <span className="px-3 py-1 text-xs rounded-full bg-surface-container-highest text-on-surface-variant">
-                Interest 1
+                Football
               </span>
               <span className="px-3 py-1 text-xs rounded-full bg-surface-container-highest text-on-surface-variant">
-                Interest 2
+                Guitar
               </span>
               <span className="px-3 py-1 text-xs rounded-full bg-surface-container-highest text-on-surface-variant">
-                Interest 3
+                Chess
               </span>
               <span className="px-3 py-1 text-xs rounded-full bg-surface-container-highest text-on-surface-variant">
-                Interest 4
+                Reading
               </span>
               <span className="px-3 py-1 text-xs rounded-full bg-surface-container-highest text-on-surface-variant">
-                Interest 5
+                AI
               </span>
               <span className="px-3 py-1 text-xs rounded-full bg-surface-container-highest text-on-surface-variant">
-                Interest 6
+                Music
               </span>
               <span className="px-3 py-1 text-xs rounded-full bg-surface-container-highest text-on-surface-variant">
-                Interest 7
-              </span>
-              <span className="px-3 py-1 text-xs rounded-full bg-surface-container-highest text-on-surface-variant">
-                Interest 8
-              </span>
-              <span className="px-3 py-1 text-xs rounded-full bg-surface-container-highest text-on-surface-variant">
-                Interest 9
+                Sports
               </span>
             </div>
           </div>
