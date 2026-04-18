@@ -1,7 +1,6 @@
 import Link from "next/link";
 
-const profileImage =
-  "https://lh3.googleusercontent.com/aida-public/AB6AXuBJCGcMrpndf0aTkbJm-9utdRMQl2f-otfU6iofHp6xeDS23wK7zjEoIdDCzvD1pZbeE8T6-XLNj1qU-msyTT-HDFBVUGdNNxfrVAnYth8lUvc8g3oxAleClzQ4PpWQuyoDxEZ9VJTeYbwAdqLl1dXHNqjnitsotipR1yB-87hd5oc_4bBPZwruO9k-_y8_vkEDzYMdYtVhZI1il1eUG-PyvVoYlCg0utjPuMEV2cyCi124PXdptjz0hfsJ_Dd0UVa5lB1F4zApCPw";
+const profileImage = "/port.jpeg";
 
 const bannerImage =
   "https://i.pinimg.com/736x/36/41/57/364157ea4f9817557ea4bdd2c8f37a0a.jpg";
@@ -22,7 +21,7 @@ export function Hero() {
             <img
               className="w-full h-full object-cover"
               src={profileImage}
-              alt="professional portrait of Prashish Dahal"
+              alt="Prashish Dahal"
             />
           </div>
         </div>
@@ -91,7 +90,7 @@ export function Hero() {
         <div className="w-full md:w-auto">
           <Link
             href="mailto:prashish.kashvi@gmail.com"
-            className="w-full md:w-auto flex items-center justify-center gap-2 bg-black text-white px-8 py-4 rounded-xl font-bold tracking-tight shadow-lg shadow-black/10 hover:opacity-90 active:scale-95 transition-all"
+            className="w-full md:w-auto flex items-center justify-center gap-2 bg-black text-white px-8 py-4 rounded-xl font-bold tracking-tight shadow-lg shadow-black/10 hover:text-purple-accent active:scale-95 transition-all"
           >
             <svg
               className="w-5 h-5"
