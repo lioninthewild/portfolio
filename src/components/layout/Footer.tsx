@@ -14,28 +14,28 @@ export default function Footer() {
         </div>
         <div className="flex flex-wrap justify-center gap-8">
           <a
-            href="#"
+            href="https://github.com/lioninthewild"
+            target="_blank"
+            rel="noopener noreferrer"
             className="text-sm text-[#787777] hover:text-black transition-colors"
           >
             GitHub
           </a>
           <a
-            href="#"
+            href="https://www.linkedin.com/in/prashishdahal/"
+            target="_blank"
+            rel="noopener noreferrer"
             className="text-sm text-[#787777] hover:text-black transition-colors"
           >
             LinkedIn
           </a>
           <a
-            href="#"
+            href="https://x.com/PrashishDahal"
+            target="_blank"
+            rel="noopener noreferrer"
             className="text-sm text-[#787777] hover:text-black transition-colors"
           >
-            ResearchGate
-          </a>
-          <a
-            href="#"
-            className="text-sm text-[#787777] hover:text-black transition-colors"
-          >
-            Source
+            Twitter
           </a>
         </div>
       </div>

@@ -1,8 +1,10 @@
 import Link from "next/link";
 
-const profileImage = "https://lh3.googleusercontent.com/aida-public/AB6AXuBJCGcMrpndf0aTkbJm-9utdRMQl2f-otfU6iofHp6xeDS23wK7zjEoIdDCzvD1pZbeE8T6-XLNj1qU-msyTT-HDFBVUGdNNxfrVAnYth8lUvc8g3oxAleClzQ4PpWQuyoDxEZ9VJTeYbwAdqLl1dXHNqjnitsotipR1yB-87hd5oc_4bBPZwruO9k-_y8_vkEDzYMdYtVhZI1il1eUG-PyvVoYlCg0utjPuMEV2cyCi124PXdptjz0hfsJ_Dd0UVa5lB1F4zApCPw";
+const profileImage =
+  "https://lh3.googleusercontent.com/aida-public/AB6AXuBJCGcMrpndf0aTkbJm-9utdRMQl2f-otfU6iofHp6xeDS23wK7zjEoIdDCzvD1pZbeE8T6-XLNj1qU-msyTT-HDFBVUGdNNxfrVAnYth8lUvc8g3oxAleClzQ4PpWQuyoDxEZ9VJTeYbwAdqLl1dXHNqjnitsotipR1yB-87hd5oc_4bBPZwruO9k-_y8_vkEDzYMdYtVhZI1il1eUG-PyvVoYlCg0utjPuMEV2cyCi124PXdptjz0hfsJ_Dd0UVa5lB1F4zApCPw";
 
-const bannerImage = "https://lh3.googleusercontent.com/aida-public/AB6AXuAzUBm_cNA6YU_Fk7K23Ued7K79TCEExesEfsLhg4TBa9sn6Z-N1FH0pHdCdLYkmvw4FXvKILXLkzCORuzQq1QzSkVts71qyhJPYSR2C4fyKBl0Q-mfR_KKipaJlsTV96HNhHve7iv96EZ-WRc--9FmsGo03IKgLztRCaA5uLkWOEivPIRgrvZZXKM1nJuO-bLVhe7aur4HNkFRtodZpJU9G7S-qYauo-kby6l5vfSZa2lPVRbRxnVOoQzDZYQnjMPQSDFoYZPioyU";
+const bannerImage =
+  "https://i.pinimg.com/736x/36/41/57/364157ea4f9817557ea4bdd2c8f37a0a.jpg";
 
 export function Hero() {
   return (
@@ -42,15 +44,21 @@ export function Hero() {
             </div>
             <div className="flex items-center gap-1.5 text-purple-accent mt-2">
               <svg className="w-4 h-4" fill="currentColor" viewBox="0 0 20 20">
-                <path fillRule="evenodd" d="M5.05 4.05a7 7 0 119.9 9.9L10 18.9l-4.95-4.95a7 7 0 010-9.9zM10 11a2 2 0 100-4 2 2 0 000 4z" clipRule="evenodd" />
+                <path
+                  fillRule="evenodd"
+                  d="M5.05 4.05a7 7 0 119.9 9.9L10 18.9l-4.95-4.95a7 7 0 010-9.9zM10 11a2 2 0 100-4 2 2 0 000 4z"
+                  clipRule="evenodd"
+                />
               </svg>
-              <span className="text-xs font-bold uppercase tracking-widest">Kathmandu, Nepal</span>
+              <span className="text-xs font-bold uppercase tracking-widest">
+                Kathmandu, Nepal
+              </span>
             </div>
           </div>
           <div className="flex items-center gap-4 pt-4">
             <a
               className="p-2.5 rounded-xl bg-surface-container-low text-on-surface-variant hover:text-black transition-colors"
-              href="https://linkedin.com"
+              href="https://www.linkedin.com/in/prashishdahal/"
               target="_blank"
               rel="noopener noreferrer"
             >
@@ -60,7 +68,7 @@ export function Hero() {
             </a>
             <a
               className="p-2.5 rounded-xl bg-surface-container-low text-on-surface-variant hover:text-black transition-colors"
-              href="https://github.com"
+              href="https://github.com/lioninthewild"
               target="_blank"
               rel="noopener noreferrer"
             >
@@ -70,7 +78,7 @@ export function Hero() {
             </a>
             <a
               className="p-2.5 rounded-xl bg-surface-container-low text-on-surface-variant hover:text-black transition-colors"
-              href="https://twitter.com"
+              href="https://x.com/PrashishDahal"
               target="_blank"
               rel="noopener noreferrer"
             >
@@ -82,11 +90,21 @@ export function Hero() {
         </div>
         <div className="w-full md:w-auto">
           <Link
-            href="mailto:prashish@example.com"
+            href="mailto:prashish.kashvi@gmail.com"
             className="w-full md:w-auto flex items-center justify-center gap-2 bg-black text-white px-8 py-4 rounded-xl font-bold tracking-tight shadow-lg shadow-black/10 hover:opacity-90 active:scale-95 transition-all"
           >
-            <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z" />
+            <svg
+              className="w-5 h-5"
+              fill="none"
+              stroke="currentColor"
+              viewBox="0 0 24 24"
+            >
+              <path
+                strokeLinecap="round"
+                strokeLinejoin="round"
+                strokeWidth={2}
+                d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"
+              />
             </svg>
             Get in touch
           </Link>
