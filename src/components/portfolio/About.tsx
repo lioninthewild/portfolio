@@ -1,3 +1,5 @@
+import Link from "next/link";
+
 export function About() {
   return (
     <section className="py-16 px-8 max-w-7xl mx-auto">
@@ -30,7 +32,7 @@ export function About() {
                 React
               </span>
               <span className="px-3 py-1 text-sm rounded-full bg-surface-container-highest text-on-surface-variant">
-                Git & Github
+                Git
               </span>
               <span className="px-3 py-1 text-sm rounded-full bg-surface-container-highest text-on-surface-variant">
                 C
@@ -70,7 +72,7 @@ export function About() {
                 Chess
               </span>
               <span className="px-3 py-1 text-sm rounded-full bg-surface-container-highest text-on-surface-variant">
-                Reading
+                Books
               </span>
               <span className="px-3 py-1 text-sm rounded-full bg-surface-container-highest text-on-surface-variant">
                 AI
@@ -84,36 +86,22 @@ export function About() {
             </div>
           </div>
         </div>
-        <div className="bg-inverse-surface p-8 rounded-xl flex flex-col justify-between min-h-[300px]">
-          <div className="space-y-3">
-            <img 
-              src="/kashvi.png" 
-              alt="Programming Fundamentals"
-              className="w-36 h-36 object-contain"
-            />
-            <div className="space-y-1">
-              <h3 className="text-2xl font-bold text-white tracking-tight">
-                Programming Fundamentals
-              </h3>
-              <p className="text-white/60 text-sm leading-relaxed">
-                Starting The Journey of digital world
-              </p>
-            </div>
+        <Link 
+          href="/kashvi/programming-fundamentals"
+          className="block bg-inverse-surface p-6 rounded-xl min-h-[220px] hover:bg-opacity-80 transition-all hover:scale-[1.02] cursor-pointer flex flex-col justify-center"
+        >
+          <div className="space-y-2">
+            <h3 className="text-2xl font-bold text-white tracking-tight">
+              Programming Fundamentals
+            </h3>
+            <p className="text-white/60 text-sm leading-relaxed">
+              Starting The Journey of digital world
+            </p>
+            <p className="text-white/50 text-sm leading-relaxed">
+              A comprehensive programming course designed for beginners. Learn the fundamentals of programming with practical examples and real-world projects. Build a strong foundation in coding that will serve you throughout your programming journey.
+            </p>
           </div>
-          <a
-            href="/kashvi/programming-fundamentals"
-            className="inline-flex items-center gap-2 text-white font-medium text-sm hover:text-purple-accent transition-colors cursor-pointer"
-          >
-            <span>View Course</span>
-            <svg
-              className="w-4 h-4 group-hover:translate-x-1 transition-transform"
-              fill="currentColor"
-              viewBox="0 0 24 24"
-            >
-              <path d="M12 4l-1.41 1.41L16.17 11H4v2h12.17l-5.58 5.59L12 20l8-8z" />
-            </svg>
-          </a>
-        </div>
+        </Link>
       </div>
     </section>
   );

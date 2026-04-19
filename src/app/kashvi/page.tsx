@@ -47,6 +47,14 @@ export default function KashviPage() {
         </Link>
         
         <Link
+          href="/kashvi/orientation"
+          className="block p-4 rounded-lg bg-surface-container-low border border-transparent hover:border-gray-300 transition-colors"
+        >
+          <h3 className="text-lg font-semibold">Orientation</h3>
+          <p className="text-[#787777]">Get started with the course</p>
+        </Link>
+        
+        <Link
           href="/kashvi/week1"
           className="block p-4 rounded-lg bg-surface-container-low border border-transparent hover:border-gray-300 transition-colors"
         >

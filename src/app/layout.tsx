@@ -4,8 +4,8 @@ import { ThemeProvider } from "@/components/layout/ThemeProvider";
 import Footer from "@/components/layout/Footer";
 
 export const metadata: Metadata = {
-  title: "Kashvi",
-  description: "Programming Course Platform",
+  title: "Prashish",
+  description: "Prashish - Portfolio & Programming Course",
 };
 
 export default function RootLayout({
