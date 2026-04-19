@@ -119,17 +119,7 @@ export default function CourseOverviewPage() {
             <h2 className="text-2xl font-bold">Course Timeline</h2>
             <div className="grid md:grid-cols-2 gap-4">
               {timeline.map((item, index) => {
-                  let href = "#";
-                  if (item.startsWith("Orientation")) {
-                    href = "/kashvi/programming-fundamentals/orientation";
-                  } else if (item.startsWith("Week ")) {
-                    const weekNum = item.match(/Week (\d+)/)?.[1];
-                    if (weekNum) {
-                      href = `/kashvi/programming-fundamentals/week${weekNum}`;
-                    }
-                  } else if (item === "Assignments") {
-                    href = "/kashvi/programming-fundamentals/assignments";
-                  }
+                  let href = "/kashvi/programming-fundamentals/course";
                   return (
                 <Link
                   key={index}
