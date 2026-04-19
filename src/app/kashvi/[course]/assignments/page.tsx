@@ -69,7 +69,7 @@ export default function AssignmentsPage() {
               {!isMinimized && <span className="text-sm font-medium">Home</span>}
             </Link>
             <Link
-              href="/kashvi/programming-fundamentals/orientation"
+              href="/kashvi/programming-fundamentals/course"
               onClick={() => setIsMobileMenuOpen(false)}
               className="flex items-center gap-3 p-2 rounded-lg hover:bg-surface-container-high transition-colors"
             >
