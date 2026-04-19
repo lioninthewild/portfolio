@@ -86,7 +86,7 @@ export function About() {
             </div>
           </div>
         </div>
-        <Link 
+        <Link
           href="/kashvi/programming-fundamentals"
           className="block bg-inverse-surface p-6 rounded-xl min-h-[220px] hover:bg-opacity-80 transition-all hover:scale-[1.02] cursor-pointer flex flex-col justify-center"
         >
@@ -95,10 +95,14 @@ export function About() {
               Programming Fundamentals
             </h3>
             <p className="text-white/60 text-sm leading-relaxed">
-              Starting The Journey of digital world
-            </p>
+              Starting the journey of digital world
+            </p>{" "}
+            <br></br>
             <p className="text-white/50 text-sm leading-relaxed">
-              A comprehensive programming course designed for beginners. Learn the fundamentals of programming with practical examples and real-world projects. Build a strong foundation in coding that will serve you throughout your programming journey.
+              A comprehensive programming course designed for beginners. Learn
+              the fundamentals of programming with practical examples and
+              real-world projects. Build a strong foundation in coding that will
+              serve you throughout your programming journey.
             </p>
           </div>
         </Link>
