@@ -24,13 +24,15 @@ export default function CourseOverviewPage() {
     "A fixed, rigid syllabus - parts of the course adapt based on students interests",
   ];
 
-  const weeks = [
+  const timeline = [
+    "Orientation: Getting Started",
     "Week 1: Building Blocks: Rewiring The Brain",
     "Week 2: Talking To The Machine: First Real Coding",
     "Week 3: Building Logic: Making Decisions and Repetitions",
     "Week 4: Functions and Modular Programming",
     "Week 5: Current Trends: How The Tech World Is Moving",
     "Week 6: Productivity With AI",
+    "Assignments",
   ];
 
   return (
@@ -114,7 +116,7 @@ export default function CourseOverviewPage() {
           <div className="space-y-4">
             <h2 className="text-2xl font-bold">Course Timeline</h2>
             <div className="grid md:grid-cols-2 gap-4">
-              {weeks.map((week, index) => (
+              {timeline.map((item, index) => (
                 <div
                   key={index}
                   className="block p-5 rounded-lg bg-surface-container-low border border-gray-200 hover:border-purple-accent hover:shadow-lg transition-all cursor-default"
@@ -123,7 +125,7 @@ export default function CourseOverviewPage() {
                     <span className="flex items-center justify-center w-8 h-8 rounded-full bg-purple-accent text-white text-sm font-bold">
                       {index + 1}
                     </span>
-                    <h3 className="text-lg font-semibold">{week}</h3>
+                    <h3 className="text-lg font-semibold">{item}</h3>
                   </div>
                 </div>
               ))}
