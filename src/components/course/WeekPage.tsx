@@ -170,23 +170,10 @@ export default function WeekPage({ weekNum, weekTitle }: WeekPageProps) {
             </p>
 
             <h2 className="text-lg lg:text-xl font-semibold mb-3">Day {selectedDay}: Content</h2>
-            <p className="text-gray-600 mb-6">
+            <p className="text-gray-600">
               This is the content for Day {selectedDay} of Week {weekNum}. Each day covers different topics 
               to help you build a strong foundation in programming.
             </p>
-
-            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 mb-6">
-              {days.filter(d => d !== selectedDay).map((day) => (
-                <button
-                  key={day}
-                  onClick={() => setSelectedDay(day)}
-                  className="p-4 rounded-lg bg-surface-container-low border border-gray-200 hover:border-purple-accent hover:shadow-lg transition-all text-left"
-                >
-                  <h3 className="font-semibold mb-1">Day {day}</h3>
-                  <p className="text-sm text-gray-500">Click to view</p>
-                </button>
-              ))}
-            </div>
           </div>
         </div>
       </main>

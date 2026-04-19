@@ -57,7 +57,7 @@ export default function OrientationPage() {
             {weeks.map((week) => (
               <Link
                 key={week.num}
-                href={`#week${week.num}`}
+                href={`/kashvi/programming-fundamentals/week${week.num}`}
                 onClick={() => setIsMobileMenuOpen(false)}
                 className={`flex items-center gap-3 p-2 rounded-lg hover:bg-surface-container-high transition-colors ${
                   isMinimized ? "justify-center" : ""
