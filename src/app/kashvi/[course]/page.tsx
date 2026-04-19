@@ -1,3 +1,5 @@
+import Link from "next/link";
+
 import type { Metadata } from "next";
 import "../../globals.css";
 
@@ -117,9 +119,10 @@ export default function CourseOverviewPage() {
             <h2 className="text-2xl font-bold">Course Timeline</h2>
             <div className="grid md:grid-cols-2 gap-4">
               {timeline.map((item, index) => (
-                <div
+                <Link
                   key={index}
-                  className="block p-5 rounded-lg bg-surface-container-low border border-gray-200 hover:border-purple-accent hover:shadow-lg transition-all cursor-default"
+                  href={item.startsWith("Orientation") ? "/kashvi/programming-fundamentals/orientation" : "#"}
+                  className="block p-5 rounded-lg bg-surface-container-low border border-gray-200 hover:border-purple-accent hover:shadow-lg transition-all"
                 >
                   <div className="flex items-center gap-4">
                     <span className="flex items-center justify-center w-8 h-8 rounded-full bg-purple-accent text-white text-sm font-bold">
@@ -127,7 +130,7 @@ export default function CourseOverviewPage() {
                     </span>
                     <h3 className="text-lg font-semibold">{item}</h3>
                   </div>
-                </div>
+                </Link>
               ))}
             </div>
           </div>
