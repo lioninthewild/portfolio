@@ -127,6 +127,8 @@ export default function CourseOverviewPage() {
                     if (weekNum) {
                       href = `/kashvi/programming-fundamentals/week${weekNum}`;
                     }
+                  } else if (item === "Assignments") {
+                    href = "/kashvi/programming-fundamentals/assignments";
                   }
                   return (
                 <Link

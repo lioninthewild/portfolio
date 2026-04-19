@@ -44,6 +44,16 @@ export default function OrientationPage() {
                 Course Content
               </span>
             )}
+            <Link
+              href="/kashvi/programming-fundamentals"
+              onClick={() => setIsMobileMenuOpen(false)}
+              className="flex items-center gap-3 p-2 rounded-lg hover:bg-surface-container-high transition-colors"
+            >
+              <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6" />
+              </svg>
+              {!isMinimized && <span className="text-sm font-medium">Home</span>}
+            </Link>
             {weeks.map((week) => (
               <Link
                 key={week.num}
@@ -61,6 +71,16 @@ export default function OrientationPage() {
                 )}
               </Link>
             ))}
+            <Link
+              href="/kashvi/programming-fundamentals/assignments"
+              onClick={() => setIsMobileMenuOpen(false)}
+              className="flex items-center gap-3 p-2 rounded-lg hover:bg-surface-container-high transition-colors"
+            >
+              <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2m-6 9l2 2 4-4" />
+              </svg>
+              {!isMinimized && <span className="text-sm font-medium">Assignments</span>}
+            </Link>
           </nav>
         </div>
       </aside>
