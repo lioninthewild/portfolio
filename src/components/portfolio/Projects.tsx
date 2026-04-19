@@ -37,8 +37,8 @@ export function Projects() {
             Active Research
           </h3>
           <p className="text-white/60 text-sm leading-relaxed">
-            Currently investigating sparse attention mechanisms in
-            large-scale transformer models for edge deployment.
+            Currently investigating sparse attention mechanisms in large-scale
+            transformer models for edge deployment.
           </p>
         </div>
         <a
@@ -46,7 +46,11 @@ export function Projects() {
           className="text-white font-medium text-sm flex items-center gap-2 group"
         >
           Read Lab Notes
-          <svg className="w-4 h-4 group-hover:translate-x-1 transition-transform" fill="currentColor" viewBox="0 0 24 24">
+          <svg
+            className="w-4 h-4 group-hover:translate-x-1 transition-transform"
+            fill="currentColor"
+            viewBox="0 0 24 24"
+          >
             <path d="M12 4l-1.41 1.41L16.17 11H4v2h12.17l-5.58 5.59L12 20l8-8z" />
           </svg>
         </a>
