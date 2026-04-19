@@ -2,52 +2,177 @@ import CourseClient from "./CourseClient";
 
 const content: Record<string, string> = {
   orientation: `# Welcome to Kashvi
+## Your Programming Journey Starts Here
 
-Your programming journey starts here!
+---
+
+# About This Course
+
+- A comprehensive programming course designed for beginners
+- Learn fundamentals with practical examples
+- Build real-world projects from scratch
+- Strong foundation for your programming career
 
 ---
 
 # What You'll Learn
 
-- Programming fundamentals
-- Problem-solving skills
-- Building real projects
+- Programming fundamentals and core concepts
+- Problem-solving and algorithmic thinking
 - How to think like a programmer
+- Building real projects from scratch
+- Best practices and coding standards
 
 ---
 
 # Course Structure
 
-- 6 weeks of content
-- 6 days per week
-- Each day has slides + practice exercises
-- Day 6 is review and application
+- **Duration:** 6 weeks
+- **Content:** 6 days per week
+- **Format:** Slides + Practice exercises
+- **Review:** Day 6 of each week is for review and application
 
 ---
 
-# How to Use These Slides
+# How This Course Works
 
-- Use **arrow keys** to navigate between slides
-- Click **Previous/Next** buttons for manual navigation
-- Progress bar at the bottom shows your position
-- Press **F** for fullscreen mode
-- Press **Esc** for overview mode
+- **Days 1-5:** New concepts with hands-on practice
+- **Day 6:** Review and apply what you've learned
+- **Each day:** Watch slides, complete exercises, build projects
+
+---
+
+# Weekly Breakdown
+
+- **Week 1:** Building Blocks - Rewiring your brain
+- **Week 2:** Talking to the Machine - First real coding
+- **Week 3:** Building Logic - Making decisions and repetitions
+- **Week 4:** Functions - Modular programming
+- **Week 5:** Current Trends - How the tech world is moving
+- **Week 6:** Productivity with AI
 
 ---
 
 # Prerequisites
 
-- No prior programming experience needed
-- Just a computer and willingness to learn
-- Curiosity and persistence
+- **No prior programming experience needed**
+- Basic computer skills (using files, browser, etc.)
+- Willingness to learn and practice
+- Just a computer and curiosity!
 
 ---
 
-# Let's Begin!
+# Tools You'll Need
 
-Ready to start your programming journey?
+- A computer (Windows, Mac, or Linux)
+- A code editor (we'll use free tools)
+- Internet connection
+- Pen and notebook for notes
 
-Head to Week 1 when you're ready!`,
+---
+
+# Meet Your Instructor
+
+- Passionate about teaching programming
+- Years of industry experience
+- Committed to helping you succeed
+- Available to answer your questions
+
+---
+
+# Learning Philosophy
+
+- **Learn by doing:** You'll write code from day one
+- **Build real projects:** Apply concepts to real problems
+- **Iterative learning:** Start simple, add complexity
+- **Community support:** Learn alongside fellow students
+
+---
+
+# Tips for Success
+
+1. **Practice daily:** Even 30 minutes makes a difference
+2. **Don't skip exercises:** They're designed to reinforce learning
+3. **Take notes:** Writing helps you remember
+4. **Ask questions:** There's no stupid question
+5. **Build projects:** Apply what you learn
+
+---
+
+# Time Commitment
+
+- **Per day:** 30-60 minutes
+- **Per week:** 3-5 hours
+- **Total course:** 6 weeks
+- **Flexible:** Learn at your own pace
+
+---
+
+# What This Course Is NOT
+
+- Not just about syntax - you'll learn the WHY
+- Not theory-heavy - you'll actively build
+- Not a fixed syllabus - adapts to student interests
+- Not a passive watching experience - you'll code along
+
+---
+
+# How to Get Help
+
+- Ask questions during the course
+- Join our community discussion
+- Review slide materials
+- Complete practice exercises
+
+---
+
+# Assessment Methods
+
+- Daily practice exercises
+- Weekly coding challenges
+- Project-based assessments
+- Self-evaluation checklists
+
+---
+
+# Certificate of Completion
+
+- Receive a certificate after completing all weeks
+- Showcase your achievement
+- Validates your programming fundamentals knowledge
+
+---
+
+# What's Next After This Course?
+
+- Build more advanced projects
+- Explore web development
+- Learn mobile app development
+- Dive into data science
+- Continue your programming journey!
+
+---
+
+# Frequently Asked Questions
+
+**Q: Do I need math skills?**
+A: Basic math is helpful, but not required. Programming uses logic more than math.
+
+**Q: How long does it take to learn?**
+A: Everyone learns at different speeds. Complete the course at your pace.
+
+**Q: What if I get stuck?**
+A: Ask questions! That's what the course community is for.
+
+---
+
+# Ready to Begin?
+
+Your programming journey starts NOW!
+
+Click on **Week 1** in the sidebar to begin your first lesson.
+
+Remember: Every expert was once a beginner. Let's get started!`,
   "1-1": `# Week 1, Day 1: Introduction to Programming
 
 ## What is Programming?
@@ -65,11 +190,9 @@ Head to Week 1 when you're ready!`,
 
 ## Your First Program
 
-The classic first program in any language is called "Hello, World!"
+The classic first program is "Hello, World!"
 
-It simply displays the text "Hello, World!" on the screen.
-
-In Python, it's just one line:
+In Python:
 \`\`\`
 print("Hello, World!")
 \`\`\`
@@ -78,18 +201,16 @@ print("Hello, World!")
 
 ## Let's Begin!
 
-Type the code above in your editor and run it. Congratulations, you're a programmer!`,
+Type the code above and run it. Congratulations, you're a programmer!`,
   "1-2": `# Week 1, Day 2: Variables and Data Types
 
 ## What are Variables?
 
 Variables are containers for storing data values.
 
-Think of them as labeled boxes where you can put information.
+Think of them as labeled boxes.
 
 ## Creating Variables
-
-In Python, you create a variable by giving it a name and a value:
 
 \`\`\`
 name = "Alice"
@@ -100,54 +221,33 @@ is_student = True
 
 ## Data Types
 
-Python has several basic data types:
-
-- **String (str)**: Text in quotes → "Hello"
-- **Integer (int)**: Whole numbers → 25
-- **Float**: Decimal numbers → 5.6
-- **Boolean (bool)**: True or False
-
-## Checking Types
-
-Use the \`type()\` function to check what type a variable is:
-
-\`\`\`
-print(type(name))    # <class 'str'>
-print(type(age))     # <class 'int'>
-\`\`\`
+- **String (str):** Text → "Hello"
+- **Integer (int):** Whole numbers → 25
+- **Float:** Decimal numbers → 5.6
+- **Boolean (bool):** True or False
 
 ---
 
 ## Practice Time!
 
-Create your own variables and check their types.`,
+Create your own variables.`,
   "1-3": `# Week 1, Day 3: Getting User Input
 
 ## Output vs Input
 
-- **Output**: Printing information to the screen (print())
-- **Input**: Getting information from the user
+- **Output:** Printing to screen (print())
+- **Input:** Getting information from user
 
 ## Getting User Input
-
-In Python, use the \`input()\` function to get user input:
 
 \`\`\`
 name = input("What is your name? ")
 print("Hello, " + name + "!")
 \`\`\`
 
-When this runs, it will:
-1. Show the prompt "What is your name?"
-2. Wait for the user to type
-3. Store what they typed in the \`name\` variable
-4. Print the greeting
-
 ## Converting Input Types
 
-The \`input()\` function always returns a string!
-
-To work with numbers, convert them:
+\`input()\` always returns a string!
 
 \`\`\`
 age = int(input("Enter your age: "))
@@ -158,14 +258,10 @@ price = float(input("Enter the price: "))
 
 ## Try It!
 
-Ask the user for their name and age, then print a personalized message.`,
+Ask the user for their name and age.`,
   "1-4": `# Week 1, Day 4: Basic Math Operations
 
-## Math in Python
-
-Python can perform mathematical calculations just like a calculator.
-
-## Basic Operators
+## Math Operators
 
 | Operator | Meaning | Example |
 |----------|---------|---------|
@@ -173,144 +269,75 @@ Python can perform mathematical calculations just like a calculator.
 | - | Subtraction | 10 - 4 = 6 |
 | * | Multiplication | 6 * 7 = 42 |
 | / | Division | 15 / 3 = 5 |
-| ** | Exponentiation | 2 ** 3 = 8 |
-| % | Modulus (remainder) | 17 % 5 = 2 |
-
-## Using Variables with Math
-
-\`\`\`
-x = 10
-y = 3
-
-print(x + y)    # 13
-print(x - y)    # 7
-print(x * y)    # 30
-print(x / y)    # 3.333...
-print(x ** y)   # 1000
-print(x % y)    # 1
-\`\`\`
+| ** | Exponent | 2 ** 3 = 8 |
+| % | Modulus | 17 % 5 = 2 |
 
 ## Order of Operations
 
-Python follows mathematical order (PEMDAS):
-
-1. Parentheses ()
-2. Exponents **
-3. Multiplication * and Division /
-4. Addition + and Subtraction -
-
-\`\`\`
-result = (10 + 5) * 2   # 30, not 20
-\`\`\`
+PEMDAS: Parentheses, Exponents, Multiplication, Division, Addition, Subtraction
 
 ---
 
 ## Calculator Challenge!
 
-Build a simple calculator that takes two numbers and performs all operations.`,
+Build a simple calculator.`,
   "1-5": `# Week 1, Day 5: Strings and String Operations
 
 ## Working with Text
 
-Strings are sequences of characters (text).
-
-You can use single quotes, double quotes, or triple quotes:
+Strings are sequences of characters.
 
 \`\`\`
 message1 = 'Hello'
 message2 = "Hello"
-message3 = '''Hello, how are you?'''
-\`\`\`
-
-## String Concatenation
-
-Combine strings using +:
-
-\`\`\`
-first_name = "John"
-last_name = "Doe"
-full_name = first_name + " " + last_name
-print(full_name)  # John Doe
 \`\`\`
 
 ## String Methods
 
-Python provides useful string methods:
-
 \`\`\`
 text = "hello world"
-
 print(text.upper())       # HELLO WORLD
 print(text.lower())       # hello world
-print(text.capitalize())  # Hello world
 print(text.title())       # Hello World
-print(len(text))          # 11
 \`\`\`
 
-## f-Strings (Formatted Strings)
-
-The modern way to embed variables in strings:
+## f-Strings
 
 \`\`\`
 name = "Alice"
-age = 25
-print(f"My name is {name} and I am {age} years old.")
+print(f"My name is {name}")
 \`\`\`
 
 ---
 
 ## Practice!
 
-Create a program that asks for user's first and last name, then displays a formatted greeting.`,
+Create a greeting program.`,
   "1-6": `# Week 1, Day 6: Review and Practice
 
 ## What We Learned This Week
 
-Let's review the key concepts from Week 1:
+- **Day 1:** Introduction to Programming
+- **Day 2:** Variables & Data Types
+- **Day 3:** Getting User Input
+- **Day 4:** Math Operations
+- **Day 5:** Strings
 
-### Day 1: Introduction
-- Programming is giving instructions to a computer
-- Your first program: \`print("Hello, World!")\`
-
-### Day 2: Variables & Data Types
-- Variables store data: \`name = "Alice"\`
-- Types: String, Integer, Float, Boolean
-
-### Day 3: User Input
-- Getting input: \`input("prompt")\`
-- Converting types: \`int()\`, \`float()\`
-
-### Day 4: Math Operations
-- Operators: +, -, *, /, **, %
-- Order of operations matters!
-
-### Day 5: Strings
-- String methods: .upper(), .lower(), .title()
-- f-strings: \`f"Hello {name}"\`
-
-## Mini Project: Personal Greeter
-
-Combine everything you've learned!
+## Mini Project
 
 Create a program that:
 1. Asks for the user's name
 2. Asks for their age
 3. Asks for their favorite color
-4. Prints a formatted message with all this information
-
-## Extra Challenges
-
-- Add input validation
-- Calculate the year they'll turn 100
-- Add error handling for non-numeric age input
+4. Prints a formatted message
 
 ---
 
 ## Congratulations!
 
-You've completed Week 1 of your programming journey!
+You've completed Week 1!
 
-Week 2 will dive deeper into making decisions with conditions and loops.`,
+Week 2 will cover making decisions with conditions.`,
 };
 
 export default function CoursePage() {

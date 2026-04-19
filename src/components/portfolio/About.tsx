@@ -13,9 +13,9 @@ export function About() {
           </h3>
           <p className="text-[#787777] max-w-md">
             I am a passionate developer focused on building intelligent systems
-            and exploring the boundaries of AI. With a strong foundation in
-            machine learning and data science, I love turning complex problems
-            into elegant solutions.
+            and exploring the use of AI. With a strong foundation in mathematics
+            and machine learning, I love turning complex problems into elegant
+            solutions.
           </p>
 
           <hr className="border-t border-gray-200 my-4" />

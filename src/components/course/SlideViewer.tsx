@@ -9,6 +9,56 @@ interface SlideViewerProps {
   markdown: string;
 }
 
+const slideStyles = `
+  .reveal .slides section {
+    background: white !important;
+    color: #1a1a1a !important;
+    padding: 40px !important;
+    text-align: left !important;
+    font-size: 28px !important;
+    line-height: 1.6 !important;
+  }
+  .reveal .slides section h1 {
+    color: #7c3aed !important;
+    font-size: 48px !important;
+    margin-bottom: 30px !important;
+  }
+  .reveal .slides section h2 {
+    color: #5b21b6 !important;
+    font-size: 36px !important;
+    margin-bottom: 20px !important;
+  }
+  .reveal .slides section h3 {
+    color: #4c1d95 !important;
+    font-size: 28px !important;
+    margin-bottom: 15px !important;
+  }
+  .reveal .slides section p {
+    color: #374151 !important;
+    margin-bottom: 20px !important;
+  }
+  .reveal .slides section ul {
+    margin-left: 20px !important;
+  }
+  .reveal .slides section li {
+    color: #374151 !important;
+    margin-bottom: 10px !important;
+  }
+  .reveal .slides section pre {
+    background: #f3f4f6 !important;
+    padding: 20px !important;
+    border-radius: 8px !important;
+    overflow-x: auto !important;
+  }
+  .reveal .slides section code {
+    color: #7c3aed !important;
+    font-family: 'Courier New', monospace !important;
+  }
+  .reveal {
+    background: white !important;
+  }
+`;
+
 export default function SlideViewer({ markdown }: SlideViewerProps) {
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   const deckRef = useRef<any>(null);
@@ -63,12 +113,6 @@ export default function SlideViewer({ markdown }: SlideViewerProps) {
     };
   }, []);
 
-  const goToSlide = (index: number) => {
-    if (deckRef.current) {
-      deckRef.current.slide(index);
-    }
-  };
-
   const goPrevious = () => {
     if (deckRef.current && currentSlide > 0) {
       deckRef.current.left();
@@ -103,13 +147,13 @@ export default function SlideViewer({ markdown }: SlideViewerProps) {
 
   return (
     <div className="flex flex-col items-center">
+      <style dangerouslySetInnerHTML={{ __html: slideStyles }} />
       <div className="reveal w-full max-w-5xl mx-auto mb-4">
         <div className="slides">
           {slides.map((slide) => (
             <section
               key={slide.index}
               dangerouslySetInnerHTML={{ __html: slide.content }}
-              className="text-left p-8"
             />
           ))}
         </div>
