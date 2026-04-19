@@ -118,10 +118,20 @@ export default function CourseOverviewPage() {
           <div className="space-y-4">
             <h2 className="text-2xl font-bold">Course Timeline</h2>
             <div className="grid md:grid-cols-2 gap-4">
-              {timeline.map((item, index) => (
+              {timeline.map((item, index) => {
+                  let href = "#";
+                  if (item.startsWith("Orientation")) {
+                    href = "/kashvi/programming-fundamentals/orientation";
+                  } else if (item.startsWith("Week ")) {
+                    const weekNum = item.match(/Week (\d+)/)?.[1];
+                    if (weekNum) {
+                      href = `/kashvi/programming-fundamentals/week${weekNum}`;
+                    }
+                  }
+                  return (
                 <Link
                   key={index}
-                  href={item.startsWith("Orientation") ? "/kashvi/programming-fundamentals/orientation" : "#"}
+                  href={href}
                   className="block p-5 rounded-lg bg-surface-container-low border border-gray-200 hover:border-purple-accent hover:shadow-lg transition-all"
                 >
                   <div className="flex items-center gap-4">
@@ -131,7 +141,8 @@ export default function CourseOverviewPage() {
                     <h3 className="text-lg font-semibold">{item}</h3>
                   </div>
                 </Link>
-              ))}
+                  );
+                })}
             </div>
           </div>
 
