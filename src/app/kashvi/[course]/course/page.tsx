@@ -2,82 +2,140 @@ import CourseClient from "./CourseClient";
 import { Suspense } from "react";
 
 const content: Record<string, string> = {
-  orientation: `# Welcome to Kashvi
-## Your Programming Journey Starts Here
+  orientation: `# Orientation
+
+# Why This Course Exists
+
+- Most beginners face this problem
+- They learn syntax
+- They memorize code
+- They still can't build anything
 
 ---
 
-# About This Course
+# The Gap
 
-- A comprehensive programming course designed for beginners
-- Learn fundamentals with practical examples
-- Build real-world projects from scratch
-- Strong foundation for your programming career
+- You know some code
+- But you don't know how to think
 
 ---
 
-# What You'll Learn
+# That's the Real Problem
 
-- Programming fundamentals and core concepts
-- Problem-solving and algorithmic thinking
-- How to think like a programmer
-- Building real projects from scratch
-- Best practices and coding standards
+- Programming is not typing
+- It's thinking
 
 ---
 
-# Course Structure
+# This Course Fixes That
 
-- **Duration:** 6 weeks
-- **Content:** 6 days per week
-- **Format:** Slides + Practice exercises
-- **Review:** Day 6 of each week is for review and application
+- We start with logic
+- We build step by step
+- We focus on understanding
+
+---
+
+# What You'll Actually Gain
+
+- Ability to break problems
+- Confidence to write your own code
+- Skill to build simple real projects
+
+---
+
+# Why This Matters
+
+- Technology is everywhere
+- If you understand how it works
+- You're no longer just a user
 
 ---
 
 # How This Course Works
 
-- **Days 1-5:** New concepts with hands-on practice
-- **Day 6:** Review and apply what you've learned
-- **Each day:** Watch slides, complete exercises, build projects
+- Class Workflow: We start with a stand-up session
+- 30 mins → Concepts
+- 60-90 mins → Practical
+- You code every day
 
 ---
 
 # Weekly Breakdown
 
-- **Week 1:** Building Blocks - Rewiring your brain
-- **Week 2:** Talking to the Machine - First real coding
-- **Week 3:** Building Logic - Making decisions and repetitions
-- **Week 4:** Functions - Modular programming
-- **Week 5:** Current Trends - How the tech world is moving
-- **Week 6:** Productivity with AI
+- Week 1: Building Blocks - Rewiring your brain
+- Week 2: Talking to the Machine - First real coding
+- Week 3: Building Logic - Making decisions and repetitions
+- Week 4: Functions - Modular programming
+- Week 5: Current Trends - How the tech world is moving
+- Week 6: Productivity with AI
 
 ---
 
-# Prerequisites
+# What Kind of Sessions to Expect
 
-- **No prior programming experience needed**
-- Basic computer skills (using files, browser, etc.)
-- Willingness to learn and practice
-- Just a computer and curiosity!
-
----
-
-# Tools You'll Need
-
-- A computer (Windows, Mac, or Linux)
-- A code editor (we'll use free tools)
-- Internet connection
-- Pen and notebook for notes
+- Interactive (not one-way lectures)
+- Hands-on (you will code)
+- Experimental (try, break, fix)
 
 ---
 
-# Meet Your Instructor
+# Where Resources Will Be
 
-- Passionate about teaching programming
-- Years of industry experience
-- Committed to helping you succeed
-- Available to answer your questions
+- All materials are organized
+- Slides and references
+- Easy to access anytime
+
+---
+
+# Where Assignments Will Be
+
+- Inside each day's section
+- Based on what you learned
+
+---
+
+# Where to Submit
+
+- Submission method will be shared
+- Simple and consistent format
+- On time matters
+
+---
+
+# Evaluation
+
+- Daily effort
+- Daily/Weekly tasks
+
+---
+
+# What I Care About
+
+- Growth
+- Not marks
+- Not perfection
+
+---
+
+# How to Approach Assignments
+
+- Try first
+- Think before copying
+- Focus on understanding
+
+---
+
+# One Rule
+
+- Get stuck
+
+---
+
+# Tasks for Today
+
+- Fill this form: https://forms.gle/47xNa1szRTzVfKjX9
+
+- Create a gmail with: yourname.kashvi@gmail.com
 
 ---
 
