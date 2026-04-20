@@ -1,4 +1,5 @@
 import CourseClient from "./CourseClient";
+import { Suspense } from "react";
 
 const content: Record<string, string> = {
   orientation: `# Welcome to Kashvi
@@ -340,6 +341,19 @@ You've completed Week 1!
 Week 2 will cover making decisions with conditions.`,
 };
 
-export default function CoursePage() {
-  return <CourseClient content={content} />;
+export default function CoursePage(props: {
+  searchParams: Promise<{ view?: string; day?: string }>;
+}) {
+  return (
+    <Suspense fallback={<div className="p-8">Loading...</div>}>
+      <CourseClientWrapper searchParams={props.searchParams} />
+    </Suspense>
+  );
+}
+
+async function CourseClientWrapper(props: {
+  searchParams: Promise<{ view?: string; day?: string }>;
+}) {
+  const searchParams = await props.searchParams;
+  return <CourseClient content={content} initialView={searchParams.view} initialDay={searchParams.day} />;
 }

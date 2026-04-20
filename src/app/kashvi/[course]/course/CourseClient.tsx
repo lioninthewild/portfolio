@@ -17,24 +17,62 @@ const days = [1, 2, 3, 4, 5, 6];
 
 type NavItem = 
   | { type: "orientation" }
-  | { type: "week"; weekNum: number; dayNum: number };
+  | { type: "week"; weekNum: number; dayNum: number }
+  | { type: "tiy" };
 
 interface CourseClientProps {
   content: Record<string, string>;
+  initialView?: string;
+  initialDay?: string;
 }
 
-export default function CourseClient({ content }: CourseClientProps) {
+function getInitialState(view?: string, day?: string): { expandedWeeks: number[]; selectedItem: NavItem } {
+  if (!view) {
+    return { expandedWeeks: [1], selectedItem: { type: "orientation" } };
+  }
+
+  if (view === "orientation") {
+    return { expandedWeeks: [], selectedItem: { type: "orientation" } };
+  }
+
+  if (view === "tiy") {
+    return { expandedWeeks: [], selectedItem: { type: "tiy" } };
+  }
+
+  const weekMatch = view.match(/week(\d+)/);
+  if (weekMatch && weekMatch[1]) {
+    const weekNum = parseInt(weekMatch[1]);
+    const dayNum = day ? parseInt(day) : 1;
+    return { 
+      expandedWeeks: [weekNum], 
+      selectedItem: { type: "week", weekNum, dayNum } 
+    };
+  }
+
+  return { expandedWeeks: [1], selectedItem: { type: "orientation" } };
+}
+
+export default function CourseClient({ content, initialView, initialDay }: CourseClientProps) {
   const [isMinimized, setIsMinimized] = useState(false);
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   const [expandedWeeks, setExpandedWeeks] = useState<number[]>([1]);
   const [selectedItem, setSelectedItem] = useState<NavItem>({ type: "orientation" });
 
+  useEffect(() => {
+    const initial = getInitialState(initialView, initialDay);
+    setExpandedWeeks(initial.expandedWeeks);
+    setSelectedItem(initial.selectedItem);
+  }, [initialView, initialDay]);
+
   const getContentKey = (item: NavItem): string => {
     if (item.type === "orientation") return "orientation";
+    if (item.type === "tiy") return "tiy";
     return `${item.weekNum}-${item.dayNum}`;
   };
 
-  const markdown = content[getContentKey(selectedItem)] || "# Content not found";
+  const markdown = selectedItem.type === "tiy" 
+    ? "" 
+    : content[getContentKey(selectedItem)] || "# Content not found";
 
   const toggleWeek = (weekNum: number) => {
     setExpandedWeeks(prev => 
@@ -149,6 +187,18 @@ export default function CourseClient({ content }: CourseClientProps) {
                 )}
               </div>
             ))}
+
+            <button
+              onClick={() => selectItem({ type: "tiy" })}
+              className={`w-full flex items-center gap-3 p-2 rounded-lg hover:bg-surface-container-high transition-colors ${
+                selectedItem.type === "tiy" ? "bg-purple-accent text-white hover:bg-purple-accent/90" : ""
+              } ${isMinimized ? "justify-center" : ""}`}
+            >
+              <svg className="w-5 h-5 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2m-6 9l2 2 4-4" />
+              </svg>
+              {!isMinimized && <span className="text-sm font-medium truncate">Try It Yourself</span>}
+            </button>
           </nav>
         </div>
       </aside>
@@ -171,7 +221,25 @@ export default function CourseClient({ content }: CourseClientProps) {
         </button>
 
         <div className="max-w-5xl mx-auto">
-          <SlideViewer markdown={markdown} key={getContentKey(selectedItem)} />
+          {selectedItem.type === "tiy" ? (
+            <div className="p-8 text-center">
+              <h2 className="text-2xl font-bold mb-4">Try It Yourself</h2>
+              <p className="text-[#787777] mb-6">
+                Practice what you've learned with these hands-on tasks.
+              </p>
+              <Link
+                href="/kashvi/programming-fundamentals/tiy"
+                className="inline-flex items-center gap-2 px-6 py-3 bg-purple-accent text-white rounded-lg hover:bg-purple-accent/90 transition-colors"
+              >
+                <span>View TIY Tasks</span>
+                <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
+                </svg>
+              </Link>
+            </div>
+          ) : (
+            <SlideViewer markdown={markdown} key={getContentKey(selectedItem)} />
+          )}
         </div>
       </main>
     </div>

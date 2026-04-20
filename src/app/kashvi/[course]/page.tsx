@@ -34,7 +34,7 @@ export default function CourseOverviewPage() {
     "Week 4: Functions and Modular Programming",
     "Week 5: Current Trends: How The Tech World Is Moving",
     "Week 6: Productivity With AI",
-    "Assignments",
+    "Try It Yourself (TIY)",
   ];
 
   return (
@@ -47,13 +47,24 @@ export default function CourseOverviewPage() {
             className="w-full h-full object-cover opacity-90"
           />
         </div>
-        <div className="mt-4">
-          <h1 className="text-3xl md:text-4xl font-bold">
-            Programming Fundamentals
-          </h1>
-          <p className="text-[#787777] mt-2">
-            Start the journey of digital world
-          </p>
+        <div className="mt-4 flex items-center justify-between">
+          <div>
+            <h1 className="text-3xl md:text-4xl font-bold">
+              Programming Fundamentals
+            </h1>
+            <p className="text-[#787777] mt-2">
+              Start the journey of digital world
+            </p>
+          </div>
+          <Link
+            href="/kashvi/programming-fundamentals/course"
+            className="hidden md:flex items-center gap-2 px-4 py-2 bg-purple-accent text-white rounded-lg hover:bg-purple-accent/90 transition-colors"
+          >
+            <span>View Course</span>
+            <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
+            </svg>
+          </Link>
         </div>
       </div>
 
@@ -119,22 +130,33 @@ export default function CourseOverviewPage() {
             <h2 className="text-2xl font-bold">Course Timeline</h2>
             <div className="grid md:grid-cols-2 gap-4">
               {timeline.map((item, index) => {
-                  let href = "/kashvi/programming-fundamentals/course";
-                  return (
-                <Link
-                  key={index}
-                  href={href}
-                  className="block p-5 rounded-lg bg-surface-container-low border border-gray-200 hover:border-purple-accent hover:shadow-lg transition-all"
-                >
-                  <div className="flex items-center gap-4">
-                    <span className="flex items-center justify-center w-8 h-8 rounded-full bg-purple-accent text-white text-sm font-bold">
-                      {index + 1}
-                    </span>
-                    <h3 className="text-lg font-semibold">{item}</h3>
-                  </div>
-                </Link>
-                  );
-                })}
+                let href = "/kashvi/programming-fundamentals/course";
+                let label = item.toLowerCase();
+                if (label.includes("orientation")) {
+                  href += "?view=orientation";
+                } else if (label.includes("week")) {
+                  const weekMatch = label.match(/week (\d+)/);
+                  if (weekMatch) {
+                    href += `?view=week${weekMatch[1]}&day=1`;
+                  }
+                } else if (label.includes("tiy") || label.includes("try it yourself")) {
+                  href += "?view=tiy";
+                }
+                return (
+                  <Link
+                    key={index}
+                    href={href}
+                    className="block p-5 rounded-lg bg-surface-container-low border border-gray-200 hover:border-purple-accent hover:shadow-lg transition-all"
+                  >
+                    <div className="flex items-center gap-4">
+                      <span className="flex items-center justify-center w-8 h-8 rounded-full bg-purple-accent text-white text-sm font-bold">
+                        {index + 1}
+                      </span>
+                      <h3 className="text-lg font-semibold">{item}</h3>
+                    </div>
+                  </Link>
+                );
+              })}
             </div>
           </div>
 
