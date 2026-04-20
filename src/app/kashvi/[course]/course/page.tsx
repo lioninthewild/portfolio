@@ -6,28 +6,21 @@ const content: Record<string, string> = {
 
 # Why This Course Exists
 
-- Most beginners face this problem
+- Most beginners:
 - They learn syntax
 - They memorize code
 - They still can't build anything
 
 ---
 
-# The Gap
+# The gap
 
 - You know some code
 - But you don't know how to think
 
 ---
 
-# That's the Real Problem
-
-- Programming is not typing
-- It's thinking
-
----
-
-# This Course Fixes That
+# This course fixes that
 
 - We start with logic
 - We build step by step
@@ -35,7 +28,7 @@ const content: Record<string, string> = {
 
 ---
 
-# What You'll Actually Gain
+# What you'll actually gain
 
 - Ability to break problems
 - Confidence to write your own code
@@ -43,19 +36,11 @@ const content: Record<string, string> = {
 
 ---
 
-# Why This Matters
+# Class Workflow
 
-- Technology is everywhere
-- If you understand how it works
-- You're no longer just a user
-
----
-
-# How This Course Works
-
-- Class Workflow: We start with a stand-up session
+- We start with a stand-up session
 - 30 mins → Concepts
-- 60-90 mins → Practical
+- 60–90 mins → Practical
 - You code every day
 
 ---
@@ -81,8 +66,8 @@ const content: Record<string, string> = {
 
 # Where Resources Will Be
 
-- All materials are organized
-- Slides and references
+- All materials are organized.
+- Slides and references.
 - Easy to access anytime
 
 ---
@@ -102,26 +87,11 @@ const content: Record<string, string> = {
 
 ---
 
-# Evaluation
-
-- Daily effort
-- Daily/Weekly tasks
-
----
-
 # What I Care About
 
 - Growth
 - Not marks
 - Not perfection
-
----
-
-# How to Approach Assignments
-
-- Try first
-- Think before copying
-- Focus on understanding
 
 ---
 
@@ -131,9 +101,9 @@ const content: Record<string, string> = {
 
 ---
 
-# Tasks for Today
+# Tasks for today:
 
-- Fill this form: https://forms.gle/47xNa1szRTzVfKjX9
+- Fill this form :https://forms.gle/47xNa1szRTzVfKjX9
 
 - Create a gmail with: yourname.kashvi@gmail.com
 
