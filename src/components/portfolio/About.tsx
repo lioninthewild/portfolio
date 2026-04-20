@@ -88,7 +88,7 @@ export function About() {
         </div>
         <Link
           href="/kashvi/programming-fundamentals"
-          className="block bg-inverse-surface p-6 rounded-xl min-h-[220px] hover:bg-opacity-80 transition-all hover:scale-[1.02] cursor-pointer flex flex-col justify-center"
+          className="block bg-inverse-surface p-6 rounded-xl min-h-[220px] hover:bg-opacity-80 transition-all hover:scale-[1.02] cursor-pointer flex flex-col justify-between"
         >
           <div className="space-y-2">
             <h3 className="text-2xl font-bold text-white tracking-tight">
@@ -104,6 +104,12 @@ export function About() {
               real-world projects. Build a strong foundation in coding that will
               serve you throughout your programming journey.
             </p>
+          </div>
+          <div className="flex items-center gap-2 text-white/80 font-medium mt-4">
+            <span>View Course</span>
+            <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
+            </svg>
           </div>
         </Link>
       </div>

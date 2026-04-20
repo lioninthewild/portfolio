@@ -47,24 +47,13 @@ export default function CourseOverviewPage() {
             className="w-full h-full object-cover opacity-90"
           />
         </div>
-        <div className="mt-4 flex items-center justify-between">
-          <div>
-            <h1 className="text-3xl md:text-4xl font-bold">
-              Programming Fundamentals
-            </h1>
-            <p className="text-[#787777] mt-2">
-              Start the journey of digital world
-            </p>
-          </div>
-          <Link
-            href="/kashvi/programming-fundamentals/course"
-            className="hidden md:flex items-center gap-2 px-4 py-2 bg-purple-accent text-white rounded-lg hover:bg-purple-accent/90 transition-colors"
-          >
-            <span>View Course</span>
-            <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
-            </svg>
-          </Link>
+        <div className="mt-4">
+          <h1 className="text-3xl md:text-4xl font-bold">
+            Programming Fundamentals
+          </h1>
+          <p className="text-[#787777] mt-2">
+            Start the journey of digital world
+          </p>
         </div>
       </div>
 
