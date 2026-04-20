@@ -1,198 +1,147 @@
 "use client";
 
-import { useEffect, useRef, useState } from "react";
-import Reveal from "reveal.js";
-import "reveal.js/reveal.css";
-import "reveal.js/theme/white.css";
+import { useState, useEffect } from "react";
 
 interface SlideViewerProps {
   markdown: string;
 }
 
-const slideStyles = `
-  .reveal .slides section {
-    background: white !important;
-    color: #1a1a1a !important;
-    padding: 40px !important;
-    text-align: left !important;
-    font-size: 28px !important;
-    line-height: 1.6 !important;
-  }
-  .reveal .slides section h1 {
-    color: #7c3aed !important;
-    font-size: 48px !important;
-    margin-bottom: 30px !important;
-  }
-  .reveal .slides section h2 {
-    color: #5b21b6 !important;
-    font-size: 36px !important;
-    margin-bottom: 20px !important;
-  }
-  .reveal .slides section h3 {
-    color: #4c1d95 !important;
-    font-size: 28px !important;
-    margin-bottom: 15px !important;
-  }
-  .reveal .slides section p {
-    color: #374151 !important;
-    margin-bottom: 20px !important;
-  }
-  .reveal .slides section ul {
-    margin-left: 20px !important;
-  }
-  .reveal .slides section li {
-    color: #374151 !important;
-    margin-bottom: 10px !important;
-  }
-  .reveal .slides section pre {
-    background: #f3f4f6 !important;
-    padding: 20px !important;
-    border-radius: 8px !important;
-    overflow-x: auto !important;
-  }
-  .reveal .slides section code {
-    color: #7c3aed !important;
-    font-family: 'Courier New', monospace !important;
-  }
-  .reveal {
-    background: white !important;
-  }
-`;
-
 export default function SlideViewer({ markdown }: SlideViewerProps) {
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  const deckRef = useRef<any>(null);
   const [currentSlide, setCurrentSlide] = useState(0);
-  const [totalSlides, setTotalSlides] = useState(0);
+  const [processedSlides, setProcessedSlides] = useState<string[]>([]);
 
+  // Parse markdown into slides
   useEffect(() => {
-    const initializeReveal = async () => {
-      if (typeof window === "undefined") return;
+    if (!markdown) {
+      setProcessedSlides([]);
+      return;
+    }
 
-      const RevealModule = await import("reveal.js");
-      const Reveal = RevealModule.default;
-
-      const deck = new Reveal({
-        embedded: true,
-        hash: false,
-        slideNumber: false,
-        progress: false,
-        center: false,
-        transition: "slide",
-        transitionSpeed: "default",
+    // Split by --- separators
+    const parts = markdown.split(/\n---\n|\n---\s|\n---/).filter(p => p.trim());
+    
+    // Process each part into HTML
+    const slides = parts.map(part => {
+      let html = part.trim();
+      
+      // Headers
+      html = html.replace(/^# (.+)$/gm, '<h1>$1</h1>');
+      html = html.replace(/^## (.+)$/gm, '<h2>$1</h2>');
+      html = html.replace(/^### (.+)$/gm, '<h3>$1</h3>');
+      
+      // Bold text
+      html = html.replace(/\*\*([^*]+)\*\*/g, '<strong>$1</strong>');
+      
+      // Code blocks
+      html = html.replace(/```([\s\S]*?)```/g, '<pre>$1</pre>');
+      html = html.replace(/`([^`]+)`/g, '<code>$1</code>');
+      
+      // Lists - convert * or - at start of line
+      const lines = html.split('\n');
+      let inList = false;
+      let processedLines = lines.map(line => {
+        const match = line.match(/^[\*\-]\s+(.+)$/);
+        if (match) {
+          inList = true;
+          return `<li>${match[1]}</li>`;
+        } else if (inList && line.trim() === '') {
+          inList = false;
+          return '';
+        } else if (inList) {
+          return '';
+        }
+        return line;
       });
-
-      deck.initialize({
-        width: 1200,
-        height: 700,
-        margin: 0.04,
-        minScale: 0.2,
-        maxScale: 2.0,
+      html = processedLines.join('\n');
+      
+      // Wrap consecutive li elements in ul
+      html = html.replace(/(<li>[\s\S]*?<\/li>\n?)+/g, '<ul>$&</ul>');
+      
+      // Paragraphs for remaining text
+      const finalLines = html.split('\n').map(line => {
+        const trimmed = line.trim();
+        if (!trimmed) return '';
+        if (trimmed.match(/^<[hupolbpre]/)) return trimmed;
+        return `<p>${trimmed}</p>`;
       });
+      
+      return finalLines.join('');
+    });
+    
+    setProcessedSlides(slides);
+    setCurrentSlide(0);
+  }, [markdown]);
 
-      // eslint-disable-next-line @typescript-eslint/no-explicit-any
-      deck.on("slidechanged", (event: any) => {
-        setCurrentSlide(event.indexh);
-      });
-
-      // eslint-disable-next-line @typescript-eslint/no-explicit-any
-      deck.on("ready", () => {
-        setTotalSlides(deck.getTotalSlides());
-        setCurrentSlide(deck.getIndices().h || 0);
-      });
-
-      deckRef.current = deck;
-    };
-
-    initializeReveal();
-
-    return () => {
-      if (deckRef.current) {
-        deckRef.current.destroy();
-      }
-    };
-  }, []);
-
-  const goPrevious = () => {
-    if (deckRef.current && currentSlide > 0) {
-      deckRef.current.left();
+  const goToPrev = () => {
+    if (currentSlide > 0) {
+      setCurrentSlide(currentSlide - 1);
     }
   };
 
-  const goNext = () => {
-    if (deckRef.current && currentSlide < totalSlides - 1) {
-      deckRef.current.right();
+  const goToNext = () => {
+    if (currentSlide < processedSlides.length - 1) {
+      setCurrentSlide(currentSlide + 1);
     }
   };
 
-  const progress = totalSlides > 0 ? ((currentSlide + 1) / totalSlides) * 100 : 0;
+  const progress = processedSlides.length > 0 
+    ? ((currentSlide + 1) / processedSlides.length) * 100 
+    : 0;
 
-  const slides = markdown.split(/^---$/m).map((slide, index) => {
-    let content = slide.trim();
-    
-    content = content.replace(/^# (.+)$/gm, '<h1>$1</h1>');
-    content = content.replace(/^## (.+)$/gm, '<h2>$1</h2>');
-    content = content.replace(/^### (.+)$/gm, '<h3>$1</h3>');
-    content = content.replace(/^\*\*([^*]+)\*\*$/gm, '<strong>$1</strong>');
-    content = content.replace(/^\* ([^*]+)$/gm, '<li>$1</li>');
-    content = content.replace(/^- (.+)$/gm, '<li>$1</li>');
-    
-    const hasList = content.includes('<li>');
-    if (hasList) {
-      content = content.replace(/(<li>[\s\S]*?<\/li>)+/g, '<ul>$&</ul>');
-    }
-    
-    return { index, content };
-  });
+  if (processedSlides.length === 0) {
+    return (
+      <div className="flex items-center justify-center p-8">
+        <p className="text-gray-500">No content available</p>
+      </div>
+    );
+  }
 
   return (
-    <div className="flex flex-col items-center">
-      <style dangerouslySetInnerHTML={{ __html: slideStyles }} />
-      <div className="reveal w-full max-w-5xl mx-auto mb-4">
-        <div className="slides">
-          {slides.map((slide) => (
-            <section
-              key={slide.index}
-              dangerouslySetInnerHTML={{ __html: slide.content }}
-            />
-          ))}
-        </div>
+    <div className="flex flex-col items-center w-full max-w-6xl mx-auto">
+      {/* Slide Display */}
+      <div className="w-full mb-6 bg-white rounded-xl shadow-lg p-8 md:p-12 min-h-[500px]">
+        <div 
+          className="prose max-w-none"
+          dangerouslySetInnerHTML={{ __html: processedSlides[currentSlide] }}
+        />
       </div>
 
-      <div className="w-full max-w-5xl">
-        <div className="flex items-center justify-between mb-2 px-4">
+      {/* Navigation */}
+      <div className="w-full">
+        <div className="flex items-center justify-between mb-3 px-4">
           <button
-            onClick={goPrevious}
+            onClick={goToPrev}
             disabled={currentSlide === 0}
-            className={`px-4 py-2 rounded-lg font-medium transition-colors ${
+            className={`px-5 py-2.5 rounded-lg font-medium transition-colors ${
               currentSlide === 0
-                ? "bg-gray-200 text-gray-400 cursor-not-allowed"
-                : "bg-purple-accent text-white hover:bg-purple-accent/90"
+                ? 'bg-gray-200 text-gray-400 cursor-not-allowed'
+                : 'bg-purple-600 text-white hover:bg-purple-700'
             }`}
           >
             ← Previous
           </button>
           
-          <span className="text-sm text-gray-600">
-            {currentSlide + 1} / {totalSlides}
+          <span className="text-sm font-medium text-gray-600">
+            {currentSlide + 1} / {processedSlides.length}
           </span>
           
           <button
-            onClick={goNext}
-            disabled={currentSlide === totalSlides - 1}
-            className={`px-4 py-2 rounded-lg font-medium transition-colors ${
-              currentSlide === totalSlides - 1
-                ? "bg-gray-200 text-gray-400 cursor-not-allowed"
-                : "bg-purple-accent text-white hover:bg-purple-accent/90"
+            onClick={goToNext}
+            disabled={currentSlide >= processedSlides.length - 1}
+            className={`px-5 py-2.5 rounded-lg font-medium transition-colors ${
+              currentSlide >= processedSlides.length - 1
+                ? 'bg-gray-200 text-gray-400 cursor-not-allowed'
+                : 'bg-purple-600 text-white hover:bg-purple-700'
             }`}
           >
             Next →
           </button>
         </div>
 
+        {/* Progress Bar */}
         <div className="h-2 bg-gray-200 rounded-full overflow-hidden">
           <div
-            className="h-full bg-purple-accent transition-all duration-300"
+            className="h-full bg-purple-600 transition-all duration-300"
             style={{ width: `${progress}%` }}
           />
         </div>

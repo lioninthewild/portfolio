@@ -5,22 +5,27 @@
 Let's review the key concepts from Week 1:
 
 ### Day 1: Introduction
+
 - Programming is giving instructions to a computer
 - Your first program: `print("Hello, World!")`
 
 ### Day 2: Variables & Data Types
+
 - Variables store data: `name = "Alice"`
 - Types: String, Integer, Float, Boolean
 
 ### Day 3: User Input
+
 - Getting input: `input("prompt")`
 - Converting types: `int()`, `float()`
 
 ### Day 4: Math Operations
-- Operators: +, -, *, /, **, %
+
+- Operators: +, -, \*, /, \*\*, %
 - Order of operations matters!
 
 ### Day 5: Strings
+
 - String methods: .upper(), .lower(), .title()
 - f-strings: `f"Hello {name}"`
 
@@ -29,6 +34,7 @@ Let's review the key concepts from Week 1:
 Combine everything you've learned!
 
 Create a program that:
+
 1. Asks for the user's name
 2. Asks for their age
 3. Asks for their favorite color
