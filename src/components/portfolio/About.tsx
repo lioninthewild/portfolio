@@ -26,31 +26,32 @@ export function About() {
             </h4>
             <div className="flex flex-wrap gap-2">
               <span className="px-3 py-1 text-sm rounded-full bg-surface-container-highest text-on-surface-variant">
-                JavaScript
-              </span>
-              <span className="px-3 py-1 text-sm rounded-full bg-surface-container-highest text-on-surface-variant">
-                React
-              </span>
-              <span className="px-3 py-1 text-sm rounded-full bg-surface-container-highest text-on-surface-variant">
-                Git
-              </span>
-              <span className="px-3 py-1 text-sm rounded-full bg-surface-container-highest text-on-surface-variant">
-                C
-              </span>
-              <span className="px-3 py-1 text-sm rounded-full bg-surface-container-highest text-on-surface-variant">
                 Python
               </span>
               <span className="px-3 py-1 text-sm rounded-full bg-surface-container-highest text-on-surface-variant">
                 Data Visualization
               </span>
               <span className="px-3 py-1 text-sm rounded-full bg-surface-container-highest text-on-surface-variant">
-                Algorithms
+                Machine Learning{" "}
               </span>
+              <span className="px-3 py-1 text-sm rounded-full bg-surface-container-highest text-on-surface-variant">
+                C
+              </span>
+              <span className="px-3 py-1 text-sm rounded-full bg-surface-container-highest text-on-surface-variant">
+                Git
+              </span>
+              <span className="px-3 py-1 text-sm rounded-full bg-surface-container-highest text-on-surface-variant">
+                JavaScript{" "}
+              </span>
+              <span className="px-3 py-1 text-sm rounded-full bg-surface-container-highest text-on-surface-variant">
+                React
+              </span>
+
               <span className="px-3 py-1 text-sm rounded-full bg-surface-container-highest text-on-surface-variant">
                 APIs
               </span>
               <span className="px-3 py-1 text-sm rounded-full bg-surface-container-highest text-on-surface-variant">
-                Machine Learning
+                Algorithms
               </span>
             </div>
           </div>
@@ -107,8 +108,18 @@ export function About() {
           </div>
           <div className="flex items-center gap-2 text-white/80 font-medium mt-4">
             <span>View Course</span>
-            <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
+            <svg
+              className="w-4 h-4"
+              fill="none"
+              stroke="currentColor"
+              viewBox="0 0 24 24"
+            >
+              <path
+                strokeLinecap="round"
+                strokeLinejoin="round"
+                strokeWidth={2}
+                d="M9 5l7 7-7 7"
+              />
             </svg>
           </div>
         </Link>
