@@ -3,6 +3,7 @@
 import { useState, useEffect } from "react";
 import Link from "next/link";
 import SlideViewer from "@/components/course/SlideViewer";
+import TIYViewer from "@/components/course/TIYViewer";
 
 const weeks = [
   { num: 1, title: "Week 1: Building Blocks" },
@@ -219,7 +220,11 @@ export default function CourseClient({ content, initialView, initialDay }: Cours
         </button>
 
         <div className="max-w-5xl mx-auto">
-          <SlideViewer markdown={markdown} key={getContentKey(selectedItem)} />
+          {selectedItem.type === "tiy" ? (
+            <TIYViewer content={content["tiy"] || ""} />
+          ) : (
+            <SlideViewer markdown={markdown} key={getContentKey(selectedItem)} />
+          )}
         </div>
       </main>
     </div>
