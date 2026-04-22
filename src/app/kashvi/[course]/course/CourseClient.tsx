@@ -70,9 +70,7 @@ export default function CourseClient({ content, initialView, initialDay }: Cours
     return `${item.weekNum}-${item.dayNum}`;
   };
 
-  const markdown = selectedItem.type === "tiy" 
-    ? "" 
-    : content[getContentKey(selectedItem)] || "# Content not found";
+  const markdown = content[getContentKey(selectedItem)] || "# Content not found";
 
   const toggleWeek = (weekNum: number) => {
     setExpandedWeeks(prev => 
@@ -221,25 +219,7 @@ export default function CourseClient({ content, initialView, initialDay }: Cours
         </button>
 
         <div className="max-w-5xl mx-auto">
-          {selectedItem.type === "tiy" ? (
-            <div className="p-8 text-center">
-              <h2 className="text-2xl font-bold mb-4">Try It Yourself</h2>
-              <p className="text-[#787777] mb-6">
-                Practice what you've learned with these hands-on tasks.
-              </p>
-              <Link
-                href="/kashvi/programming-fundamentals/tiy"
-                className="inline-flex items-center gap-2 px-6 py-3 bg-purple-accent text-white rounded-lg hover:bg-purple-accent/90 transition-colors"
-              >
-                <span>View TIY Tasks</span>
-                <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
-                </svg>
-              </Link>
-            </div>
-          ) : (
-            <SlideViewer markdown={markdown} key={getContentKey(selectedItem)} />
-          )}
+          <SlideViewer markdown={markdown} key={getContentKey(selectedItem)} />
         </div>
       </main>
     </div>
