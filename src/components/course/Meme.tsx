@@ -1,36 +1,21 @@
-interface MemeProps {
-  type: "confusion" | "copy-paste" | "struggle" | "beginner" | "success" | "debugging";
-}
+export default function Meme({ type }: { type: string }) {
+  const memeConfig: Record<string, { emoji: string; message: string; bg: string }> = {
+    confusion: { emoji: "😵‍💫", message: "Wait, what's happening?", bg: "bg-red-100" },
+    "copy-paste": { emoji: "📋", message: "Why write code when I can copy?", bg: "bg-yellow-100" },
+    struggle: { emoji: "😤", message: "It's not working... why?!", bg: "bg-orange-100" },
+    beginner: { emoji: "🆕", message: "Hello World! I made this!", bg: "bg-green-100" },
+    success: { emoji: "🎉", message: "It works! I did it!", bg: "bg-green-100" },
+    debugging: { emoji: "🐛", message: "There must be a bug somewhere...", bg: "bg-blue-100" },
+  };
 
-const memeImages: Record<string, string> = {
-  confusion: "😵‍💫",
-  "copy-paste": "📋",
-  struggle: "😤",
-  beginner: "🆕",
-  success: "🎉",
-  debugging: "🐛",
-};
+  const config = memeConfig[type] || memeConfig.beginner;
 
-const memeMessages: Record<string, string> = {
-  confusion: "Wait, what's happening?",
-  "copy-paste": "Why write code when I can copy?",
-  struggle: "It's not working... why?!",
-  beginner: "Hello World! I made this!",
-  success: "It works! I did it!",
-  debugging: "There must be a bug somewhere...",
-};
-
-export default function Meme({ type }: MemeProps) {
   return (
-    <div className="flex flex-col items-center justify-center p-8 my-6 bg-gradient-to-r from-purple-50 to-pink-50 rounded-2xl border-2 border-purple-200">
-      <div className="text-6xl mb-4" role="img" aria-label={type}>
-        {memeImages[type] || "🤔"}
-      </div>
-      <p className="text-lg text-purple-700 font-medium italic">
-        "{memeMessages[type]}"
-      </p>
-      <div className="mt-3 px-3 py-1 bg-purple-100 rounded-full text-xs text-purple-600 font-medium">
-        {type.toUpperCase()} MEME
+    <div className={`flex items-center justify-center gap-4 p-6 my-6 ${config.bg} rounded-2xl border-2 border-opacity-50`}>
+      <span className="text-5xl">{config.emoji}</span>
+      <div>
+        <p className="text-lg font-medium text-gray-800">"{config.message}"</p>
+        <p className="text-xs font-bold text-gray-500 uppercase mt-1">{type} MEME</p>
       </div>
     </div>
   );
