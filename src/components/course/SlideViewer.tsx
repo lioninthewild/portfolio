@@ -1,6 +1,13 @@
 "use client";
 
 import { useState, useEffect, useCallback } from "react";
+import dynamic from "next/dynamic";
+
+const Meme = dynamic(() => import("./Meme"), { ssr: false });
+
+interface MemeProps {
+  type: "confusion" | "copy-paste" | "struggle" | "beginner" | "success" | "debugging";
+}
 
 interface SlideViewerProps {
   markdown: string;
@@ -44,6 +51,11 @@ export default function SlideViewer({ markdown }: SlideViewerProps) {
         } else if (inList) {
           return '';
         }
+        
+        if (line.includes('[') && line.includes(']')) {
+          return `<div class="diagram">${line}</div>`;
+        }
+        
         return line;
       });
       html = processedLines.join('\n');
@@ -53,7 +65,7 @@ export default function SlideViewer({ markdown }: SlideViewerProps) {
       const finalLines = html.split('\n').map(line => {
         const trimmed = line.trim();
         if (!trimmed) return '';
-        if (trimmed.match(/^<[hupolbpre]/)) return trimmed;
+        if (trimmed.match(/^<[hupolbpredi]/)) return trimmed;
         return `<p>${trimmed}</p>`;
       });
       
@@ -96,6 +108,30 @@ export default function SlideViewer({ markdown }: SlideViewerProps) {
     ? ((currentSlide + 1) / processedSlides.length) * 100 
     : 0;
 
+  const renderSlideContent = (html: string) => {
+    const memeRegex = /<Meme type="([^"]+)" \/>/g;
+    const parts = html.split(memeRegex);
+    
+    if (parts.length === 1) {
+      return <div dangerouslySetInnerHTML={{ __html: html }} />;
+    }
+    
+    return (
+      <>
+        {parts.map((part, index) => {
+          if (index % 2 === 1) {
+            const memeType = parts[index] as MemeProps["type"];
+            return <Meme key={index} type={memeType} />;
+          }
+          if (part) {
+            return <div key={`text-${index}`} dangerouslySetInnerHTML={{ __html: part }} />;
+          }
+          return null;
+        })}
+      </>
+    );
+  };
+
   if (processedSlides.length === 0) {
     return (
       <div className="flex items-center justify-center p-8">
@@ -135,10 +171,9 @@ export default function SlideViewer({ markdown }: SlideViewerProps) {
             isAnimating ? "opacity-50 scale-[0.98]" : "opacity-100 scale-100"
           }`}
         >
-          <div 
-            className="prose max-w-none"
-            dangerouslySetInnerHTML={{ __html: processedSlides[currentSlide] }}
-          />
+          <div className="prose max-w-none">
+            {renderSlideContent(processedSlides[currentSlide])}
+          </div>
         </div>
       </div>
 
@@ -263,6 +298,29 @@ export default function SlideViewer({ markdown }: SlideViewerProps) {
         .prose strong {
           color: #1a1a1a;
           font-weight: 600;
+        }
+        .prose .diagram {
+          background: #f8fafc;
+          border: 2px solid #e2e8f0;
+          border-radius: 0.75rem;
+          padding: 1rem 1.5rem;
+          margin: 1rem 0;
+          font-family: monospace;
+          font-size: 1rem;
+          color: #334155;
+          white-space: pre;
+          overflow-x: auto;
+          display: flex;
+          align-items: center;
+          gap: 0.5rem;
+        }
+        .prose .diagram span {
+          display: inline-block;
+          background: #fef3c7;
+          padding: 0.25rem 0.75rem;
+          border-radius: 0.375rem;
+          font-weight: 500;
+          color: #92400e;
         }
       `}</style>
     </div>
