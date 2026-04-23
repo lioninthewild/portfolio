@@ -1,13 +1,6 @@
 "use client";
 
 import { useState, useEffect, useCallback } from "react";
-import dynamic from "next/dynamic";
-
-const Meme = dynamic(() => import("./Meme"), { ssr: false });
-
-interface MemeProps {
-  type: "confusion" | "copy-paste" | "struggle" | "beginner" | "success" | "debugging";
-}
 
 interface SlideViewerProps {
   markdown: string;
@@ -119,10 +112,6 @@ export default function SlideViewer({ markdown }: SlideViewerProps) {
     return (
       <>
         {parts.map((part, index) => {
-          if (index % 2 === 1) {
-            const memeType = parts[index] as MemeProps["type"];
-            return <Meme key={index} type={memeType} />;
-          }
           if (part) {
             return <div key={`text-${index}`} dangerouslySetInnerHTML={{ __html: part }} />;
           }
