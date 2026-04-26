@@ -269,15 +269,15 @@ export default function SlideViewer({ markdown }: SlideViewerProps) {
           font-size: 0.9em;
         }
         .prose pre {
-          background: #1e1e2e;
-          color: #cdd6f4;
+          background: #ffffff;
+          color: #000000;
           padding: 1.25rem;
           border-radius: 0.75rem;
+          border: 2px solid #9333ea;
           overflow-x: auto;
           margin: 1.25rem 0;
           font-size: 0.95rem;
           line-height: 1.6;
-          box-shadow: inset 0 2px 4px rgba(0,0,0,0.3);
         }
         .prose pre code {
           background: transparent;
@@ -289,14 +289,14 @@ export default function SlideViewer({ markdown }: SlideViewerProps) {
           font-weight: 600;
         }
         .prose .diagram {
-          background: #f8fafc;
-          border: 2px solid #e2e8f0;
+          background: #ffffff;
+          border: 2px solid #9333ea;
           border-radius: 0.75rem;
           padding: 1rem 1.5rem;
           margin: 1rem 0;
           font-family: monospace;
           font-size: 1rem;
-          color: #334155;
+          color: #000000;
           white-space: pre;
           overflow-x: auto;
           display: flex;
@@ -305,11 +305,11 @@ export default function SlideViewer({ markdown }: SlideViewerProps) {
         }
         .prose .diagram span {
           display: inline-block;
-          background: #fef3c7;
+          background: #f3e8ff;
           padding: 0.25rem 0.75rem;
           border-radius: 0.375rem;
           font-weight: 500;
-          color: #92400e;
+          color: #7c3aed;
         }
       `}</style>
     </div>
