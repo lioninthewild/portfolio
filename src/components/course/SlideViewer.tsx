@@ -31,6 +31,19 @@ export default function SlideViewer({ markdown }: SlideViewerProps) {
       html = html.replace(/```([\s\S]*?)```/g, '<pre><code>$1</code></pre>');
       html = html.replace(/`([^`]+)`/g, '<code>$1</code>');
       
+      const tableRegex = /^(\|.+\|)\n(\|.+\|)\n((?:\|.+\|\n?)+)$/gm;
+      html = html.replace(tableRegex, (match: string, headerRow: string, separatorRow: string, bodyRows: string) => {
+        const headers = headerRow.split('|').filter((c: string) => c.trim()).map((h: string) => `<th>${h.trim()}</th>`).join('');
+        
+        const bodyLines = bodyRows.trim().split('\n');
+        const bodyCells = bodyLines.map((row: string) => {
+          const cells = row.split('|').filter((c: string) => c.trim()).map((c: string) => `<td>${c.trim()}</td>`).join('');
+          return `<tr>${cells}</tr>`;
+        }).join('\n');
+        
+        return `<table><thead><tr>${headers}</tr></thead><tbody>${bodyCells}</tbody></table>`;
+      });
+      
       const lines = html.split('\n');
       let inList = false;
       let processedLines = lines.map(line => {
@@ -310,6 +323,63 @@ export default function SlideViewer({ markdown }: SlideViewerProps) {
           border-radius: 0.375rem;
           font-weight: 500;
           color: #7c3aed;
+        }
+        .prose table {
+          width: 100%;
+          border-collapse: collapse;
+          margin: 1.25rem 0;
+          font-size: 0.95rem;
+        }
+        .prose th {
+          background: #f3e8ff;
+          color: #1a1a1a;
+          font-weight: 700;
+          text-align: left;
+          padding: 0.75rem 1rem;
+          border: 2px solid #9333ea;
+          border-radius: 0.5rem 0.5rem 0 0;
+        }
+        .prose td {
+          padding: 0.65rem 1rem;
+          border: 1px solid #e5e7eb;
+          color: #374151;
+        }
+        .prose tr:nth-child(even) td {
+          background: #fafafa;
+        }
+        .prose tr:last-child td:first-child {
+          border-radius: 0 0 0 0.5rem;
+        }
+        .prose tr:last-child td:last-child {
+          border-radius: 0 0.5rem 0 0;
+        }
+        .prose code {
+          background: #f3e8ff;
+          color: #7c3aed;
+          padding: 0.25rem 0.5rem;
+          border-radius: 0.375rem;
+          font-family: monospace;
+          font-size: 0.9em;
+        }
+        .prose pre {
+          background: #ffffff;
+          color: #000000;
+          padding: 1.25rem;
+          border-radius: 0.75rem;
+          border: 2px solid #9333ea;
+          overflow-x: auto;
+          margin: 1.25rem 0;
+          font-size: 0.95rem;
+          line-height: 1.6;
+        }
+        .prose pre code {
+          background: transparent;
+          color: inherit;
+          padding: 0;
+        }
+        .prose strong {
+          color: #1a1a1a;
+          font-weight: 600;
         }
       `}</style>
     </div>
