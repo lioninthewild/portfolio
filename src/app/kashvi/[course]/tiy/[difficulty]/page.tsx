@@ -26,7 +26,7 @@ export default function TIYDifficultyPage() {
   
   const [expandedSection, setExpandedSection] = useState<string | null>("conceptual");
   const [isMinimized, setIsMinimized] = useState(false);
-  const [expandedWeeks, setExpandedWeeks] = useState<number[]>([1]);
+  const [expandedWeeks, setExpandedWeeks] = useState<number[]>([]);
 
   const toggleSection = (section: string) => {
     setExpandedSection(expandedSection === section ? null : section);
