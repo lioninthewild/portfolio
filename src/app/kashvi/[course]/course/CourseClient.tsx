@@ -2,6 +2,7 @@
 
 import { useState, useEffect } from "react";
 import Link from "next/link";
+import { useParams } from "next/navigation";
 import SlideViewer from "@/components/course/SlideViewer";
 import TIYViewer from "@/components/course/TIYViewer";
 
@@ -54,6 +55,8 @@ function getInitialState(view?: string, day?: string): { expandedWeeks: number[]
 }
 
 export default function CourseClient({ content, initialView, initialDay }: CourseClientProps) {
+  const params = useParams();
+  const course = params?.course || "python";
   const [isMinimized, setIsMinimized] = useState(false);
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   const [expandedWeeks, setExpandedWeeks] = useState<number[]>([1]);
@@ -198,6 +201,33 @@ export default function CourseClient({ content, initialView, initialDay }: Cours
               </svg>
               {!isMinimized && <span className="text-sm font-medium truncate">Try It Yourself</span>}
             </button>
+
+            {/* TIY Sub-menu */}
+            {!isMinimized && selectedItem.type === "tiy" && (
+              <div className="ml-6 mt-2 space-y-1">
+                <Link
+                  href={`/kashvi/${course}/tiy/easy`}
+                  className="flex items-center gap-2 p-2 rounded-lg text-sm text-gray-600 hover:bg-green-50 hover:text-green-700 transition-colors"
+                >
+                  <span>🟢</span>
+                  <span>Easy (6 marks)</span>
+                </Link>
+                <Link
+                  href={`/kashvi/${course}/tiy/medium`}
+                  className="flex items-center gap-2 p-2 rounded-lg text-sm text-gray-600 hover:bg-yellow-50 hover:text-yellow-700 transition-colors"
+                >
+                  <span>🟡</span>
+                  <span>Medium (9 marks)</span>
+                </Link>
+                <Link
+                  href={`/kashvi/${course}/tiy/hard`}
+                  className="flex items-center gap-2 p-2 rounded-lg text-sm text-gray-600 hover:bg-red-50 hover:text-red-700 transition-colors"
+                >
+                  <span>🔴</span>
+                  <span>Hard (15 marks)</span>
+                </Link>
+              </div>
+            )}
           </nav>
         </div>
       </aside>
