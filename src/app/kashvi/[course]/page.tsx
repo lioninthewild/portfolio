@@ -129,7 +129,7 @@ export default function CourseOverviewPage() {
                     href += `?view=week${weekMatch[1]}&day=1`;
                   }
                 } else if (label.includes("tiy") || label.includes("try it yourself")) {
-                  href += "?view=tiy";
+                  href = "/kashvi/programming-fundamentals/tiy";
                 }
                 return (
                   <Link

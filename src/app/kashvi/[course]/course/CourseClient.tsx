@@ -191,7 +191,9 @@ export default function CourseClient({ content, initialView, initialDay }: Cours
             ))}
 
             <button
-              onClick={() => selectItem({ type: "tiy" })}
+              onClick={() => {
+                window.location.href = `/kashvi/${course}/tiy/`;
+              }}
               className={`w-full flex items-center gap-3 p-2 rounded-lg hover:bg-surface-container-high transition-colors ${
                 selectedItem.type === "tiy" ? "bg-purple-accent text-white hover:bg-purple-accent/90" : ""
               } ${isMinimized ? "justify-center" : ""}`}
@@ -201,33 +203,6 @@ export default function CourseClient({ content, initialView, initialDay }: Cours
               </svg>
               {!isMinimized && <span className="text-sm font-medium truncate">Try It Yourself</span>}
             </button>
-
-            {/* TIY Sub-menu */}
-            {!isMinimized && selectedItem.type === "tiy" && (
-              <div className="ml-6 mt-2 space-y-1">
-                <Link
-                  href={`/kashvi/${course}/tiy/easy`}
-                  className="flex items-center gap-2 p-2 rounded-lg text-sm text-gray-600 hover:bg-green-50 hover:text-green-700 transition-colors"
-                >
-                  <span>🟢</span>
-                  <span>Easy (6 marks)</span>
-                </Link>
-                <Link
-                  href={`/kashvi/${course}/tiy/medium`}
-                  className="flex items-center gap-2 p-2 rounded-lg text-sm text-gray-600 hover:bg-yellow-50 hover:text-yellow-700 transition-colors"
-                >
-                  <span>🟡</span>
-                  <span>Medium (9 marks)</span>
-                </Link>
-                <Link
-                  href={`/kashvi/${course}/tiy/hard`}
-                  className="flex items-center gap-2 p-2 rounded-lg text-sm text-gray-600 hover:bg-red-50 hover:text-red-700 transition-colors"
-                >
-                  <span>🔴</span>
-                  <span>Hard (15 marks)</span>
-                </Link>
-              </div>
-            )}
           </nav>
         </div>
       </aside>

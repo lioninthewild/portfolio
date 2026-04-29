@@ -5,6 +5,8 @@ import Link from "next/link";
 import { useParams } from "next/navigation";
 import { tiyContent, TIYDifficulty } from "@/data/tiy-content";
 
+const difficulties = ["easy", "medium", "hard"] as const;
+
 export default function TIYDifficultyPage() {
   const params = useParams();
   const difficulty = params.difficulty as string;
@@ -75,7 +77,7 @@ export default function TIYDifficultyPage() {
       <header className="bg-white shadow-sm border-b border-gray-200 sticky top-0 z-10">
         <div className="max-w-4xl mx-auto px-4 py-4 flex items-center gap-4">
           <Link 
-            href="/kashvi/python/course?view=tiy"
+            href="/kashvi/python/tiy"
             className="flex items-center gap-2 text-gray-600 hover:text-purple-600 transition-colors"
           >
             <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -84,9 +86,28 @@ export default function TIYDifficultyPage() {
             <span className="font-medium">Back to TIY</span>
           </Link>
           <div className="h-6 w-px bg-gray-300"></div>
-          <h1 className="text-xl font-bold text-gray-800">
-            TIY - {content.name} ({content.marks} marks)
-          </h1>
+          
+          {/* Sidebar Navigation */}
+          <nav className="flex items-center gap-1">
+            {difficulties.map((diff) => {
+              const item = tiyContent[diff];
+              const isActive = diff === difficulty;
+              const itemStyles = item.color;
+              return (
+                <Link
+                  key={diff}
+                  href={`/kashvi/python/tiy/${diff}`}
+                  className={`px-3 py-1.5 rounded-lg text-sm font-medium transition-colors ${
+                    isActive 
+                      ? `${itemStyles.bg} ${itemStyles.badge.replace('bg-', 'text-').replace('-100', '-700')}` 
+                      : 'text-gray-600 hover:bg-gray-100'
+                  }`}
+                >
+                  {itemStyles.icon} {item.name}
+                </Link>
+              );
+            })}
+          </nav>
         </div>
       </header>
 
