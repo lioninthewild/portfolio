@@ -14,8 +14,397 @@ const content: Record<string, string> = {
   "1-4": "# Day 4: Slight Revision and Few Logical Problems",
   "1-5":
     '# Day 5 — Making Numbers Actually Work\n\n# Where We Left Off\n\nDay 3 ended with a crash:\n```python\nage = input("Your age: ")\nprint(age + 10)   # TypeError\n```\n\nToday we fix it — and then go much further.\n\n\n---\n\n# Type Conversion\n\ninput() always gives you a string — even when user types a number.\n```python\nx = input("Enter a number: ")\n# You type: 7\n# Python sees: "7"   text, not a number\n```\n\n\n\n---\n\n# The Conversion Tools\n\n| Function  | Converts to    | Example                |\n| --------- | -------------- | ---------------------- |\n| int()     | Whole number   | int("16") → 16          |\n| float()   | Decimal number | float("3.5") → 3.5      |\n| str()     | Text           | str(99) → "99"           |\n\n\n---\n\n# The Pattern You\'ll Use Most\n\n```python\nage = int(input("Your age: "))\n```\n\nRead it inside-out:\n1. input(...) — waits for user to type\n2. int(...) — converts that text to a number\n3. age = — stores it\n\n---\n\n# Try It\n\n```python\nage = int(input("Your age: "))\nprint("In 5 years, you\'ll be", age + 5)\n```\n\nYour age: 16 → In 5 years, you\'ll be 21\nNow it\'s real math. Not string gluing.\n\n\n---\n\n# str() — Going Back to Text\n\nSometimes you need to turn a number back into text:\n```python\nscore = 97\nprint("Your score: " + str(score) + "/100")\n```\n\nWithout str(), the + crashes.\n\n\n---\n\n# What Can Go Wrong\n\n```python\nage = int(input("Your age: "))\n```\n\nIf user types "sixteen" instead of 16:\nValueError: invalid literal for int()\n\nWe\'ll handle this later. For now — trust your user.\n\n\n\n---\n\n# Arithmetic Operators\n\n| Operator | Meaning        | Example   | Result     |\n| -------- | -------------- | --------- | ---------- |\n| +        | Add            | 10 + 3    | 13         |\n| -        | Subtract       | 10 - 3    | 7          |\n| *        | Multiply      | 10 * 3    | 30         |\n| /        | Divide       | 10 / 3    | 3.333...   |\n| //       | Floor divide  | 10 // 3   | 3          |\n| %        | Remainder     | 10 % 3    | 1          |\n   | Power        | 2 ** 8    | 256        |\n\n---\n\n# The Two You\'ll Forget\n\n// and % are more useful than they look:\n```python\nminutes = 137\nhours     = 137 // 60    # 2 hours\nremaining = 137 % 60     # 17 leftover\nprint(hours, "hrs", remaining, "mins")\n# 2 hrs 17 mins\n```\n\nAny time you need to split a quantity — these are your tools.\n\n\n---\n\n# Build: Cricket Chase Calculator\n\n```python\nruns_scored     = int(input("Runs scored: "))\novers_played    = int(input("Overs played: "))\ntarget          = int(input("Target: "))\novers_remaining = int(input("Overs remaining: "))\n\nruns_needed  = target - runs_scored\ncurrent_rr   = round(runs_scored / overs_played, 2)\nrequired_rr  = round(runs_needed / overs_remaining, 2)\n\n\nprint("---")\nprint("Runs needed :", runs_needed)\nprint("Current RR  :", current_rr)\nprint("Required RR :", required_rr)\n```\n\nSample: 87 runs, 10 overs, target 165, 10 overs left\nRuns needed: 78, Current RR: 8.7, Required RR: 7.8\n\n---\n\n# Assignment Operators\n\nYou\'ve used = since Day 2. There\'s a whole family:\n| Operator | Meaning                 | Equivalent to            |\n| -------- | ----------------------- | ------------------------ |\n| =       | Assign                  | x = 5                    |\n| +=      | Add and update          | x += 3 → x = x + 3       |\n| -=     | Subtract and update      | x -= 3 → x = x - 3        |\n| *=     | Multiply and update      | x *= 2 → x = x * 2        |\n| /=     | Divide and update      | x /= 2 → x = x / 2        |\n| //=    | Floor divide and update | x //= 2 → x = x // 2       |\n| %=     | Remainder and update   | x %= 2 → x = x % 2        |\n\n\n\n---\n\n# Assignment Operators in Action\n\n```python\nscore = 0\n\nscore += 10    # Got a point\nscore += 10    # Got another\nscore -= 5     # Penalty\nscore *= 2     # Bonus: double everything\n\nprint("Final score:", score)\n# Final score: 30\n```\n\nKeeps code clean — no need to rewrite variable twice.\n\n---\n\n# Comparison Operators\n\nCompare two values and return True or False.\n| Operator | Meaning          | Example  | Result  |\n| -------- | ---------------- | -------- | ------- |\n| ==      | Equal to         | 5 == 5  | True   |\n| !=      | Not equal       | 5 != 3  | True   |\n| >       | Greater than    | 7 > 3   | True   |\n| <       | Less than       | 2 < 1   | False  |\n| >=      | Greater or equal | 5 >= 5  | True   |\n| <=      | Less or equal    | 4 <= 3   | False  |\n\n---\n\n# Comparison in Action\n\n```python\nscore   = int(input("Your score: "))\npassing = 40\n\nprint("Passed :", score >= passing)\nprint("Failed :", score < passing)\nprint("Perfect:", score == 100)\n```\n\nYour score: 73 Passed: True, Failed: False, Perfect: False\nOutput is True or False — called booleans.\n\n\n---\n\n# Logical Operators\n\nCombine comparisons to make decisions.\n| Operator | Meaning           | Example          | Result  |\n| -------- | ----------------- | ---------------- | ------- |\n| and      | Both must be True | True and False   | False  |\n| or       | At least one True | True or False    | True   |\n| not      | Flip it           | not True         | False  |\n\n---\n\n# Logical in Action\n\n```python\nage    = int(input("Your age: "))\nheight = int(input("Height in cm: "))\n\neligible = age >= 12 and height >= 140\n\nprint("Eligible for ride:", eligible)\n```\n\nage: 13, height: 135 → Eligible: False\n\nBoth conditions must be met.\n\n---\n\n# String Operators\n\nStrings have their own operators:\n| Operator | Meaning            | Example              | Result       |\n| -------- | ------------------ | -------------------- | ------------ |\n| +        | Join strings       | "hi" + " there"      | "hi there"   |\n| *        | Repeat string      | "ha" * 3            | "hahaha"    |\n| in       | Check if contained | "cat" in "catfish" | True        |\n| not in   | Check if absent    | "dog" in "catfish"   | False       |\n\n\n---\n\n    \n\n---\n\n# Operator Precedence\n\n\nWhen multiple operators — which runs first?\n| Priority    | Operators                   | Description        |\n| ----------- | --------------------------- | ------------------ |\n| 1 (highest) | ()                        | Parentheses        |\n| 2           | **                        | Exponentiation     |\n| 3           | +x, -x                  | Unary plus / minus |\n| 4           | * / // %                 | Multiply / Divide  |\n| 5           | + -                      | Add / Subtract     |\n| 6           | == != > < >= <=           | Comparison         |\n| 7           | not                      | Logical NOT        |\n| 8           | and                      | Logical AND        |\n| 9 (lowest)  | or                       | Logical OR         |\n\n\n---\n\n# Why Precedence Matters\n\nSame numbers, wildly different results:\n```python\nprint(2 + 3 * 4)        # 14, * before +\nprint((2 + 3) * 4)      # 20, () forces + first\n```\n\nWhen in doubt, use parentheses.\n\n\n---\n\n# Build: Personal Stats Card\n\n```python\nname   = input("Name: ")\nage    = int(input("Age: "))\nheight = float(input("Height (in cm): "))\nweight = float(input("Weight (in kg): "))\n\nbmi        = round(weight / ((height / 100) ** 2), 2)\nbirth_year = 2025 - age\nmin_weight = round(18.5 * ((height / 100) ** 2), 1)\nmax_weight = round(24.9 * ((height / 100) ** 2), 1)\n\n\n\n\nprint("---")\nprint("Name       :", name)\nprint("Age        :", age, "| Born:", birth_year)\nprint("BMI        :", bmi)\nprint("Ideal range:", min_weight, "kg —", max_weight, "kg")\n```\n\nSample: Riya, 17, 162cm, 55kg\nBMI: 20.95, Born: 2008, Ideal: 48.5-65.3kg\n\n---\n\n# Final Task — Smart Score Card\n\n\nBuild a 2-player game score tracker:\n- Take each player\'s score per round\n- Use += to accumulate (not add all at once)\n- Print totals and average (2 decimals)\n- Use comparison + logical to determine:\n  - Who won (or tie)\n  - Perfect game: all 3 rounds above 80\n  - Close game: difference ≤ 10\n\n```\n--- Player 1 ---\nTotal: 241 | Avg: 80.33\n--- Player 2 ---\nTotal: 238 | Avg: 79.33\nWinner: Player 1, Perfect: False, Close: True\n```\n\n\n\nabs(a - b) gives difference without caring which is larger\n\n---\n\n# What You Learned Today\n\n- int(), float(), str() — convert types\n- Arithmetic: + - * / // % ** — 7 operators\n- Assignment: += -= *= — update without rewriting\n- Comparison: == != > < >= <= — return True/False\n- Logical: and or not — combine conditions\n- String: + * in not in — join, repeat, search\n- Precedence: () first, then **, then * /, then + -\n\n\n---\n\n# Coming Up\n\n**??**',
-  "2-1":
+"2-1":
     '# Week 2, Day 1 — Strings Up Close\n\n# Where We Left Off\n\nWeek 1 taught you the building blocks:\n\n- `print()` to show output\n- Variables to store data\n- `input()` to take data from the user\n- Operators to calculate and compare\n\nYou\'ve been using strings since Day 2 — but you\'ve never really looked inside them.\n\nToday, that changes.\n\n\n---\n\n# What Is a String, Really?\n\nA string is a **sequence of characters**.\n\n```python\nname = "Prassist"\n```\n\nIt\'s not just the word "Prassist" — to Python, it\'s five individual characters stored in a specific order:\n\n```\nP  r  a  s  s  i  s  t\n0  1  2  3  4  5  6  7\n```\n\nEvery character has a numbered position called an **index**, starting from `0`.\n\nThis matters — because once you know the positions, you can reach into a string and pull out exactly what you want.\n\n\n---\n\n# The Methods You\'ll Use Most\n\n| Method           | What it does                         | Example                                 | Result          |\n| ---------------- | ------------------------------------ | --------------------------------------- | --------------- |\n| `.upper()`       | All uppercase                        | `"hello".upper()`                       | `"HELLO"`       |\n| `.lower()`       | All lowercase                        | `"HELLO".lower()`                       | `"hello"`       |\n| `.strip()`       | Remove leading/trailing spaces       | `"  hi  ".strip()`                      | `"hi"`          |\n| `.replace(a, b)` | Swap one thing for another           | `"I love cats".replace("cats", "dogs")` | `"I love dogs"` |\n| `.title()`       | Capitalize first letter of each word | `"john doe".title()`                    | `"John Doe"`    |\n| `len()`          | Count total characters               | `len("hello")`                          | `5`             |\n\n\n---\n\n# Try It: Methods in Action\n\n```python\nname = input("Enter your name: ")\n\nprint(name.upper())    # All caps\nprint(name.title())    # Proper capitalization\nprint(len(name))       # How many characters\n```\n\n```\nEnter your name:   resha thapa\n  RESHA THAPA\n  Resha Thapa\n  11\n```\n\nThe spaces are also counted in `len()` — "resha thapa" is 11 characters including the space.\n\n\n---\n\n# Chaining Methods\n\nYou can call multiple methods in one line. Python runs them left to right:\n\n```python\nname = "  resha thapa  "\n\nclean = name.strip().title()\nprint(clean)   # "Resha Thapa"\n```\n\nStep by step:\n\n1. `name.strip()` → `"resha thapa"` (spaces removed)\n2. `.title()` applied to the result → `"Resha Thapa"`\n\n\n---\n\n# Practice 1\n\nAsk for someone\'s full name. Print it three ways: all caps, all lowercase, and title case. Also print the total number of characters.\n\n```python\nname = input("Your full name: ")\n\n# print uppercase\n# print lowercase\n# print title case\n# print length\n```\n\n**Expected output (for input " riya sharma "):**\n\n```\n  RIYA SHARMA\n  riya sharma\n  Riya Sharma\n  12\n```\n\nHint: strip the spaces first, then apply the other methods on the clean version.\n\n\n---\n\n# .replace() Up Close\n\n`.replace(old, new)` swaps every occurrence of one thing for another.\n\n```python\nmessage = "I love Mondays"\nnew_message = message.replace("Mondays", "Fridays")\nprint(new_message)   # "I love Fridays"\n```\n\nIt doesn\'t change the original — it returns a new string. So you must store it:\n\n```python\nsentence = "bad weather today"\nsentence.replace("bad", "great")   # ← does nothing if you don\'t store it\nprint(sentence)                     # still "bad weather today"\n\nsentence = sentence.replace("bad", "great")  # ← now it works\nprint(sentence)                               # "great weather today"\n```\n\n\n---\n\n# Practice 2\n\nAsk the user for a sentence. Replace the word `"hate"` with `"love"` and print the result. Also print the original unchanged sentence below it.\n\n```python\nsentence = input("Enter a sentence: ")\n# replace "hate" with "love" and store in new variable\n# print the new version\n# print the original\n```\n\n**Expected output (for input "I hate Mondays"):**\n\n```\nI love Mondays\nI hate Mondays\n```\n\n\n---\n\n# Indexing\n\nNow we go deeper. Strings are **ordered** — every character has a fixed position.\n\nYou access a character using square brackets `[]` with the index number inside:\n\n```python\nword = "Python"\nprint(word[0])   # \'P\'\nprint(word[1])   # \'y\'\nprint(word[5])   # \'n\'\n```\n\nThe positions look like this:\n\n```\n P   y   t   h   o   n\n 0   1   2   3   4   5\n```\n\nCounting always starts at `0` in Python. The last character is at position `len(word) - 1`.\n\n\n---\n\n# Negative Indexing\n\nPython also lets you count from the end using negative numbers:\n\n```python\nword = "Python"\nprint(word[-1])   # \'n\'  ← last character\nprint(word[-2])   # \'o\'  ← second from last\nprint(word[-6])   # \'P\'  ← same as word[0]\n```\n\nThe negative positions:\n\n```\n P   y   t   h   o   n\n-6  -5  -4  -3  -2  -1\n```\n\n\n---\n\n# Practice 3\n\nAsk the user for their full name. Print:\n\n- The first character using index `0`\n- The last character using index `-1`\n- Whether the name starts with a capital — compare `name[0]` to `name[0].upper()` and print `True` or `False`\n\n```python\nname = input("Your name: ")\n# print first character\n# print last character\n# print whether first character is uppercase\n```\n\n**Expected output (for input "priya"):**\n\n```\nFirst: p\nLast : a\nStarts with capital: False\n```\n\n\n---\n\n# Slicing\n\nIndexing gives you one character. **Slicing** gives you a chunk.\n\nThe format is:\n\n```python\nword[start:end]\n```\n\n- Starts at `start` (included)\n- Stops before `end` (not included)\n\n```python\nword = "Programming"\n\nprint(word[0:4])    # \'Prog\'    → positions 0, 1, 2, 3\nprint(word[4:7])    # \'ram\'     → positions 4, 5, 6\nprint(word[0:11])   # \'Programming\' → the whole word\n```\n\nThe end index is always **excluded**. Think of it as "stop before reaching this position."\n\n\n---\n\n# Slice Shortcuts\n\nYou can leave out the start or end to use defaults:\n\n```python\nword = "Programming"\n\nprint(word[:4])    # \'Prog\'       → from start up to (not including) 4\nprint(word[4:])    # \'ramming\'    → from position 4 to the very end\nprint(word[:])     # \'Programming\' → the whole string\nprint(word[-3:])   # \'ing\'        → last 3 characters\n```\n\n| Slice       | Meaning                             |\n| ----------- | ----------------------------------- |\n| `word[:n]`  | First `n` characters                |\n| `word[n:]`  | Everything from position `n` to end |\n| `word[-n:]` | Last `n` characters                 |\n\n\n---\n\n# Try It: Slicing in Action\n\n```python\nemail = input("Enter your email: ")\n# user types: "priya@gmail.com"\n\nusername = email[:5]          # first 5 characters\ndomain   = email[-9:]         # last 9 characters\n\nprint("Username preview:", username)\nprint("Domain         :", domain)\n```\n\n```\nEnter your email: priya@gmail.com\nUsername preview: priya\nDomain         : gmail.com\n```\n\n\n---\n\n# Practice 4\n\nAsk the user for any word. Print:\n\n- The first 3 characters\n- The last 3 characters\n- Everything except the first and last character (hint: `[1:-1]`)\n\n```python\nword = input("Enter a word: ")\n# print first 3\n# print last 3\n# print middle (without first and last)\n```\n\n**Expected output (for input "champion"):**\n\n```\nFirst 3 : cha\nLast 3  : ion\nMiddle  : hampion\n```\n\n\n---\n\n# Putting It Together\n\nMethods, indexing, and slicing all work on the same string — and you can combine them freely:\n\n```python\nname = "  priya thapa  "\n\nclean    = name.strip()         # "priya thapa"\ninitials = clean[0].upper() + "." + clean[6].upper() + "."\nprint(initials)   # "P.T."\n```\n\n```python\nword = input("Enter a word: ")\nprint(word[:3].upper())   # First 3 chars, in uppercase\n```\n\nSlicing returns a string. So you can call `.upper()`, `.lower()` etc. on a slice directly.\n\n\n---\n\n# Practice 5\n\nAsk for a product name and a price as a string (e.g. `"1500"`). Use string methods and slicing to print a formatted label:\n\n```python\nproduct = input("Product name: ")\nprice   = input("Price (numbers only): ")\n\n# Format the product name in title case\n# Extract only the first word of the product name using slicing\n# Print a formatted label\n```\n\n**Expected output (for input "running shoes" and "1500"):**\n\n```\nProduct : Running Shoes\nCategory: Running\nPrice   : Rs. 1500\n```\n\nHint: To get the first word, slice up to the index of the first space. A space character has a position like any other character.\n\n\n---\n\n# Challenge 1 — Username Formatter\n\nBuild an automatic username generator.\n\nAsk the user for:\n\n- First name\n- Last name\n- Birth year\n\n**Requirements:**\n\n- Strip extra spaces from both names before using them\n- Username = first 3 characters of first name + last name + last 2 digits of birth year — all **lowercase**\n- Display name = first name and last name in title case, joined with a space\n- Also print the total character count of the username\n\n**Expected output (for: " priya ", "THAPA", "2008"):**\n\n```\n==============================\nUsername     : prithapa08\nDisplay name : Priya Thapa\nLength       : 10\n==============================\n```\n\n\n---\n\n# Challenge 2 — Message Analyzer\n\nAsk the user to type any message. Print a full report about it using only string methods, indexing, and slicing.\n\n**Requirements:**\n\n- Total character count (including spaces)\n- First and last character (use indexing)\n- A "preview" — first 10 characters (use slicing)\n- The message in uppercase\n- The message with the word `"bad"` replaced by `"good"`\n- Whether the message starts with a capital letter — print `True` or `False`\n\n**Expected output (for message: "bad day today"):**\n\n```\n=============================\nMessage    : bad day today\nLength     : 13\nFirst char : b\nLast char  : y\nPreview    : bad day to\nUppercase  : BAD DAY TODAY\nCleaned    : good day today\nStarts cap : False\n=============================\n```\n\n\n---\n\n# What You Learned Today\n\n- Strings are **sequences of characters**, each with a numbered position starting at `0`\n- **Methods** are built-in tools you call with a dot: `.upper()`, `.lower()`, `.strip()`, `.replace()`, `.title()`\n- `len()` counts the total number of characters in a string\n- **Indexing** (`word[0]`, `word[-1]`) picks one character by position\n- Negative indexes count from the end — `word[-1]` is always the last character\n- **Slicing** (`word[start:end]`) extracts a range — start is included, end is excluded\n- You can **chain** methods and call them on slices: `word[:3].upper()`\n\n\n---\n\n# Coming Up — Day 2\n\n**??**',
+  "2-2":
+    `# Week 2, Day 2 - Sorted, Escape Characters & Lists
+
+# Where We Left Off
+
+Day 1 gave you a deep look at strings — methods, indexing, slicing.
+
+Today we cover three new things:
+
+1. \`sorted()\` — a powerful built-in function that works on strings and lists
+2. Escape characters — special characters you can't just type directly
+3. Lists — the most important data structure you'll learn this week
+
+---
+
+# Part 1: \`sorted()\`
+
+# What is it?
+
+\`sorted()\` is a **built-in Python function** that takes any sequence — a string, a list — and returns a **new, sorted version** of it.
+
+It does not change the original. It always gives back a new sorted result.
+
+\`\`\`python
+word = "python"
+print(sorted(word))    # ['h', 'n', 'o', 'p', 't', 'y']
+print(word)            # 'python'  ← original unchanged
+\`\`\`
+
+> When used on a string, \`sorted()\` breaks it into individual characters and sorts them alphabetically. The result is a **list** — you'll understand lists fully later in this session.
+
+---
+
+# Sorting Numbers
+
+\`sorted()\` works on a collection of numbers too:
+
+\`\`\`python
+scores = [85, 42, 97, 61, 30]
+print(sorted(scores))    # [30, 42, 61, 85, 97]
+\`\`\`
+
+Default order is **ascending** (smallest to largest).
+
+---
+
+# Reverse Sort
+
+To sort in descending order (largest to smallest), pass \`reverse=True\`:
+
+\`\`\`python
+scores = [85, 42, 97, 61, 30]
+print(sorted(scores, reverse=True))    # [97, 85, 61, 42, 30]
+\`\`\`
+
+Works on strings too:
+
+\`\`\`python
+names = ["Prassist", "Kabir", "Arjun", "Zara"]
+print(sorted(names))                   # ['Arjun', 'Kabir', 'Prassist', 'Zara']
+print(sorted(names, reverse=True))     # ['Zara', 'Prassist', 'Kabir', 'Arjun']
+\`\`\`
+
+---
+
+# Getting a String Back
+
+When \`sorted()\` is used on a string, the result is a list of characters. To convert it back into a string, use \`"".join()\`:
+
+\`\`\`python
+word        = "python"
+sorted_word = "".join(sorted(word))
+print(sorted_word)    # 'hnopyt'
+\`\`\`
+
+---
+
+# \`sorted()\` vs \`.sort()\`
+
+You will sometimes see \`.sort()\` used instead. Here is the key difference:
+
+|                   | \`sorted()\`        | \`.sort()\`               |
+| ----------------- | ----------------- | ----------------------- |
+| Works on          | Any sequence      | Lists only              |
+| Changes original? | No — returns new  | Yes — modifies in place |
+| Returns           | A new sorted list | \`None\`                  |
+
+\`\`\`python
+scores = [85, 42, 97]
+
+# sorted() — safe, returns new list
+new = sorted(scores)
+print(scores)   # [85, 42, 97]  ← unchanged
+print(new)      # [42, 85, 97]
+
+# .sort() — modifies original
+scores.sort()
+print(scores)   # [42, 85, 97]  ← changed permanently
+\`\`\`
+
+> For now, prefer \`sorted()\` — it's safer because it doesn't destroy the original data.
+
+---
+
+# Part 2: Escape Characters
+
+# The Problem
+
+Some characters can't be typed directly inside a string. Try this:
+
+\`\`\`python
+print("She said "hello" to me")   # 💥 SyntaxError
+\`\`\`
+
+Python sees the second \`"\` and thinks the string ended there. It gets confused by what comes after.
+
+Or this:
+
+\`\`\`python
+print("C:\\new_folder\\titles")   # ⚠️ Unexpected behaviour
+\`\`\`
+
+The \`\\n\` and \`\\t\` inside that path are interpreted as special characters — not as backslashes.
+
+**Escape characters** solve this. They are two-character sequences starting with a backslash that tell Python: _"this is a special character, not a literal one."_
+
+---
+
+# The Escape Characters You Need to Know
+
+| Escape | Meaning                                  | Example                | Output                              |
+| ------ | ---------------------------------------- | ---------------------- | ----------------------------------- |
+| \`\\n\`   | New line                                 | \`"line1\\nline2"\`       | line1 _(newline)_ line2             |
+| \`\\t\`   | Tab (indent)                             | \`"name:\\tPrassist"\`       | name: Prassist |
+| \`\\\\\`   | Literal backslash                        | \`"C:\\\\Users\\\\prassist"\`   | C:\\Users\\prassist                      |
+| \`\\"\`   | Double quote inside double-quoted string | \`"She said \\"hello\\""\` | She said "hello"                    |
+| \`\\'\`   | Single quote inside single-quoted string | \`'It\\'s fine'\`         | It's fine                           |
+
+---
+
+# Why This Matters
+
+Escape characters are not just a syntax trick. They are essential for:
+
+- Formatting output cleanly without dozens of \`print()\` calls
+- Handling real-world data like file paths, quoted text, and tabular output
+- Avoiding crashes when strings contain quotes or backslashes
+
+---
+
+# Part 3: Lists
+
+# What is a List?
+
+So far, every variable you've created holds **one value**:
+
+\`\`\`python
+name  = "Prassist"
+score = 94
+city  = "Kathmandu"
+\`\`\`
+
+But what if you need to store **multiple values** together?
+
+Imagine you're building a school app. You need to store the scores of 30 students. Creating 30 separate variables is not programming — it's chaos.
+
+A **list** solves this. It's a single variable that holds **multiple values, in order**.
+
+\`\`\`python
+scores = [85, 92, 78, 95, 61]
+\`\`\`
+
+---
+
+# Real-Life Scenarios for Lists
+
+| Situation     | What the list holds          |
+| ------------- | ---------------------------- |
+| Music app     | All songs in a playlist      |
+| School system | All student names in a class |
+| Shopping cart | All items added by the user  |
+| Leaderboard   | Top 10 scores in a game      |
+| To-do app     | All tasks the user added     |
+
+> Every time you see a collection of similar things — names, scores, items, tasks — that's a list in Python.
+
+---
+
+# Why Lists Matter
+
+Without lists:
+
+\`\`\`python
+student1 = "Arjun"
+student2 = "Prassist"
+student3 = "Kabir"
+student4 = "Zara"
+# ... 26 more variables
+\`\`\`
+
+With a list:
+
+\`\`\`python
+students = ["Arjun", "Prassist", "Kabir", "Zara"]
+\`\`\`
+
+One variable. All the data. Organised, accessible, and manageable.
+
+---
+
+# Creating a List
+
+A list is created using **square brackets \`[]\`**, with items separated by commas:
+
+\`\`\`python
+fruits   = ["apple", "mango", "banana", "grape"]
+scores   = [85, 92, 78, 95]
+mixed    = ["Prassist", 17, "Kathmandu", True]   # lists can hold different types
+empty    = []                                   # empty list — perfectly valid
+\`\`\`
+
+> Lists can hold strings, numbers, booleans — or a mix. In practice, you'll usually keep one type per list.
+
+---
+
+# Accessing Items
+
+Just like strings, lists are **indexed starting at 0**:
+
+\`\`\`python
+fruits = ["apple", "mango", "banana", "grape"]
+
+print(fruits[0])    # 'apple'
+print(fruits[1])    # 'mango'
+print(fruits[-1])   # 'grape'   ← last item
+print(fruits[-2])   # 'banana'  ← second from last
+\`\`\`
+
+You can also slice a list exactly like a string:
+
+\`\`\`python
+print(fruits[1:3])    # ['mango', 'banana']
+print(fruits[:2])     # ['apple', 'mango']
+print(fruits[2:])     # ['banana', 'grape']
+\`\`\`
+
+And check the total number of items with \`len()\`:
+
+\`\`\`python
+print(len(fruits))    # 4
+\`\`\`
+
+---
+
+# Changing Items
+
+Unlike strings, lists are **mutable** — you can change individual items after creation:
+
+\`\`\`python
+fruits = ["apple", "mango", "banana", "grape"]
+
+fruits[1] = "pineapple"
+print(fruits)    # ['apple', 'pineapple', 'banana', 'grape']
+\`\`\`
+
+You simply assign a new value to the index:
+
+\`\`\`python
+scores = [85, 92, 78, 95]
+scores[2] = 100
+print(scores)    # [85, 92, 100, 95]
+\`\`\`
+
+> Compare this to strings — \`word[0] = "P"\` would crash because strings are **immutable** (cannot be changed after creation). Lists are different — they are designed to be changed.
+
+---
+
+# Adding Items
+
+# .append() — Add to the End
+
+\`\`\`python
+fruits = ["apple", "mango"]
+fruits.append("banana")
+print(fruits)    # ['apple', 'mango', 'banana']
+\`\`\`
+
+\`.append()\` always adds to the **end** of the list. It changes the original list directly.
+
+---
+
+# .insert() — Add at a Specific Position
+
+\`\`\`python
+fruits = ["apple", "mango", "grape"]
+fruits.insert(1, "banana")    # insert at index 1
+print(fruits)                 # ['apple', 'banana', 'mango', 'grape']
+\`\`\`
+
+Everything from that index onward shifts one position to the right.
+
+---
+
+# Removing Items
+
+# .remove() — Remove by Value
+
+\`\`\`python
+fruits = ["apple", "mango", "banana", "grape"]
+fruits.remove("mango")
+print(fruits)    # ['apple', 'banana', 'grape']
+\`\`\`
+
+\`.remove()\` finds the **first occurrence** of that value and removes it. If the value doesn't exist, it crashes:
+
+\`\`\`python
+fruits.remove("pineapple")   # 💥 ValueError: list.remove(x): x not in list
+\`\`\`
+
+---
+
+# .pop() — Remove by Index
+
+\`\`\`python
+fruits = ["apple", "mango", "banana", "grape"]
+removed = fruits.pop(1)       # removes item at index 1
+print(removed)                # 'mango'
+print(fruits)                 # ['apple', 'banana', 'grape']
+\`\`\`
+
+\`.pop()\` also **returns** the removed item — so you can store it if needed.
+
+Without an argument, \`.pop()\` removes the **last item**:
+
+\`\`\`python
+fruits.pop()       # removes 'grape'
+print(fruits)      # ['apple', 'banana']
+\`\`\`
+
+---
+
+# .clear() — Remove Everything
+
+\`\`\`python
+fruits = ["apple", "mango", "banana"]
+fruits.clear()
+print(fruits)    # []
+\`\`\`
+
+---
+
+# Other Useful List Operations
+
+\`\`\`python
+fruits = ["apple", "mango", "banana", "mango"]
+
+print(fruits.count("mango"))    # 2  ← how many times 'mango' appears
+print(fruits.index("banana"))   # 2  ← index of first 'banana'
+print("apple" in fruits)        # True  ← membership check
+print("grape" in fruits)        # False
+
+fruits.reverse()                # reverses in place
+print(fruits)                   # ['mango', 'banana', 'mango', 'apple']
+
+fruits.sort()                   # sorts alphabetically in place
+print(fruits)                   # ['apple', 'banana', 'mango', 'mango']
+\`\`\`
+
+---
+
+# What You Learned Today
+
+- \`sorted()\` returns a new sorted list — use \`reverse=True\` for descending order
+- \`.sort()\` modifies the original list in place — prefer \`sorted()\` when you need to keep the original
+- **Escape characters** let you include special characters in strings: \`\\n\` (new line), \`\\t\` (tab), \`\\\\\` (backslash), \`\\"\` and \`\\'\` (quotes)
+- A **list** stores multiple values in a single variable, in a specific order
+- Lists are **mutable** — you can change, add, and remove items after creation
+- **Access**: \`list[0]\`, \`list[-1]\`, \`list[1:3]\`, \`len(list)\`
+- **Change**: \`list[index] = new_value\`
+- **Add**: \`.append()\` (end), \`.insert(index, value)\` (specific position)
+- **Remove**: \`.remove(value)\` (by value), \`.pop(index)\` (by position), \`.clear()\` (everything)
+- **Search**: \`.count()\`, \`.index()\`, \`in\` operator
+
+---
+
+# Coming Up — Day 3
+
+**??**
+`
 };
 
 export default function CoursePage(props: {
