@@ -64,7 +64,7 @@ export default function EvaluationPage() {
     setLoading(true);
     try {
       const { data, error } = await supabase
-        .from('evaluations')
+        .from('student_evaluations')
         .select('*')
         .eq('course', course)
         .order('student_name', { ascending: true })
@@ -99,7 +99,7 @@ export default function EvaluationPage() {
     
     try {
       const { error } = await supabase
-        .from('evaluations')
+        .from('student_evaluations')
         .delete()
         .eq('student_name', studentName)
         .eq('course', course);
@@ -143,7 +143,7 @@ export default function EvaluationPage() {
     try {
       // Check if evaluation exists for this student/week
       const { data: existing } = await supabase
-        .from('evaluations')
+        .from('student_evaluations')
         .select('id')
         .eq('student_name', selectedStudent)
         .eq('week', activeWeek)
@@ -153,7 +153,7 @@ export default function EvaluationPage() {
       if (existing) {
         // Update existing
         const { error } = await supabase
-          .from('evaluations')
+          .from('student_evaluations')
           .update(evalData)
           .eq('id', existing.id);
         
@@ -161,7 +161,7 @@ export default function EvaluationPage() {
       } else {
         // Insert new
         const { error } = await supabase
-          .from('evaluations')
+          .from('student_evaluations')
           .insert(evalData);
         
         if (error) throw error;
