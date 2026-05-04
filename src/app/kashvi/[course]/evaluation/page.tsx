@@ -148,7 +148,7 @@ export default function EvaluationPage() {
         .eq('student_name', selectedStudent)
         .eq('week', activeWeek)
         .eq('course', course)
-        .single();
+        .maybeSingle();
 
       if (existing) {
         // Update existing
