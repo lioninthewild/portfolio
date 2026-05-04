@@ -10,6 +10,7 @@
   },
   "dependencies": {
     "@revealjs/react": "^0.2.1",
+    "@supabase/supabase-js": "^2.105.1",
     "autoprefixer": "^10.5.0",
     "next": "^15.1.0",
     "react": "^19.0.0",
