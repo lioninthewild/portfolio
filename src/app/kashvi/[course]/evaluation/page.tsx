@@ -3,34 +3,27 @@
 import { useState, useEffect } from "react";
 import Link from "next/link";
 import { useParams, useSearchParams } from "next/navigation";
+import { supabase } from "@/lib/supabase";
 
 const weeks = [1, 2, 3, 4, 5, 6];
 
-interface MetricScore {
-  testObtained: number;
-  testTotal: number;
-  testPercentage: number;
+interface EvaluationData {
+  id?: number;
+  student_name: string;
+  week: number;
+  course: string;
+  test_obtained: number;
+  test_total: number;
+  test_percentage: number;
   curiosity: number;
   understanding: number;
   creativity: number;
-  problemSolving: number;
-}
-
-interface WeekData {
-  week: number;
-  metrics: MetricScore;
+  problem_solving: number;
   notes: string;
-  date: string;
-  isFilled: boolean;
+  created_at?: string;
 }
 
-interface StudentData {
-  id: string;
-  name: string;
-  weeks: Record<number, WeekData>;
-}
-
-const initialMetric: MetricScore = {
+const initialMetric = {
   testObtained: 0,
   testTotal: 30,
   testPercentage: 0,
@@ -44,46 +37,83 @@ export default function EvaluationPage() {
   const params = useParams();
   const searchParams = useSearchParams();
   const course = params?.course || "python";
-  const viewMode = searchParams.get("view") || "teacher";
-  const isStudentView = viewMode === "student";
+  
+  // View mode logic
+  const viewMode = searchParams.get("view") || "student";
+  const password = searchParams.get("pwd") || "";
+  const teacherPassword = process.env.NEXT_PUBLIC_TEACHER_PASSWORD || "";
+  const isTeacherView = viewMode === "teacher" && password === teacherPassword;
 
   const [activeWeek, setActiveWeek] = useState(1);
-  const [students, setStudents] = useState<StudentData[]>([]);
+  const [students, setStudents] = useState<string[]>([]);
+  const [evaluations, setEvaluations] = useState<EvaluationData[]>([]);
   const [newStudentName, setNewStudentName] = useState("");
-  const [selectedStudent, setSelectedStudent] = useState<string>("");
-  const [currentMetrics, setCurrentMetrics] = useState<MetricScore>(initialMetric);
+  const [selectedStudent, setSelectedStudent] = useState("");
+  const [currentMetrics, setCurrentMetrics] = useState(initialMetric);
   const [notes, setNotes] = useState("");
   const [isMinimized, setIsMinimized] = useState(false);
   const [expandedWeeks, setExpandedWeeks] = useState<number[]>([]);
+  const [loading, setLoading] = useState(true);
 
+  // Load data from Supabase
   useEffect(() => {
-    const saved = localStorage.getItem(`evaluation-${course}`);
-    if (saved) {
-      setStudents(JSON.parse(saved));
-    }
-  }, [course]);
+    fetchEvaluations();
+  }, [course, activeWeek]);
 
-  const saveStudents = (data: StudentData[]) => {
-    setStudents(data);
-    localStorage.setItem(`evaluation-${course}`, JSON.stringify(data));
+  const fetchEvaluations = async () => {
+    setLoading(true);
+    try {
+      const { data, error } = await supabase
+        .from('evaluations')
+        .select('*')
+        .eq('course', course)
+        .order('student_name', { ascending: true })
+        .order('week', { ascending: true });
+
+      if (error) throw error;
+      
+      setEvaluations(data || []);
+      
+      // Extract unique student names
+      const uniqueStudents = [...new Set(data?.map(e => e.student_name) || [])];
+      setStudents(uniqueStudents);
+    } catch (error) {
+      console.error('Error fetching evaluations:', error);
+    } finally {
+      setLoading(false);
+    }
   };
 
-  const addStudent = () => {
+  const addStudent = async () => {
     if (!newStudentName.trim()) return;
-    const newStudent: StudentData = {
-      id: Date.now().toString(),
-      name: newStudentName.trim(),
-      weeks: {},
-    };
-    saveStudents([...students, newStudent]);
+    
+    const newName = newStudentName.trim();
+    if (!students.includes(newName)) {
+      setStudents([...students, newName]);
+    }
     setNewStudentName("");
   };
 
-  const removeStudent = (id: string) => {
-    saveStudents(students.filter(s => s.id !== id));
+  const removeStudent = async (studentName: string) => {
+    if (!confirm(`Delete all evaluations for ${studentName}?`)) return;
+    
+    try {
+      const { error } = await supabase
+        .from('evaluations')
+        .delete()
+        .eq('student_name', studentName)
+        .eq('course', course);
+
+      if (error) throw error;
+      
+      setStudents(students.filter(s => s !== studentName));
+      fetchEvaluations();
+    } catch (error) {
+      console.error('Error deleting student:', error);
+    }
   };
 
-  const handleMetricChange = (field: keyof MetricScore, value: number) => {
+  const handleMetricChange = (field: string, value: number) => {
     const updated = { ...currentMetrics, [field]: value };
     if (field === "testObtained" || field === "testTotal") {
       updated.testPercentage = updated.testTotal > 0 
@@ -93,32 +123,78 @@ export default function EvaluationPage() {
     setCurrentMetrics(updated);
   };
 
-  const saveEvaluation = () => {
+  const saveEvaluation = async () => {
     if (!selectedStudent) return;
     
-    const updatedStudents = students.map(s => {
-      if (s.id === selectedStudent) {
-        return {
-          ...s,
-          weeks: {
-            ...s.weeks,
-            [activeWeek]: {
-              week: activeWeek,
-              metrics: currentMetrics,
-              notes,
-              date: new Date().toISOString(),
-              isFilled: true,
-            },
-          },
-        };
+    const evalData = {
+      student_name: selectedStudent,
+      week: activeWeek,
+      course: course,
+      test_obtained: currentMetrics.testObtained,
+      test_total: currentMetrics.testTotal,
+      test_percentage: currentMetrics.testPercentage,
+      curiosity: currentMetrics.curiosity,
+      understanding: currentMetrics.understanding,
+      creativity: currentMetrics.creativity,
+      problem_solving: currentMetrics.problemSolving,
+      notes: notes,
+    };
+
+    try {
+      // Check if evaluation exists for this student/week
+      const { data: existing } = await supabase
+        .from('evaluations')
+        .select('id')
+        .eq('student_name', selectedStudent)
+        .eq('week', activeWeek)
+        .eq('course', course)
+        .single();
+
+      if (existing) {
+        // Update existing
+        const { error } = await supabase
+          .from('evaluations')
+          .update(evalData)
+          .eq('id', existing.id);
+        
+        if (error) throw error;
+      } else {
+        // Insert new
+        const { error } = await supabase
+          .from('evaluations')
+          .insert(evalData);
+        
+        if (error) throw error;
       }
-      return s;
-    });
-    
-    saveStudents(updatedStudents);
-    setSelectedStudent("");
-    setCurrentMetrics(initialMetric);
-    setNotes("");
+
+      setSelectedStudent("");
+      setCurrentMetrics(initialMetric);
+      setNotes("");
+      fetchEvaluations();
+      alert('Evaluation saved!');
+    } catch (error) {
+      console.error('Error saving evaluation:', error);
+      alert('Error saving evaluation');
+    }
+  };
+
+  const loadStudentData = (studentName: string) => {
+    const evalData = evaluations.find(e => e.student_name === studentName && e.week === activeWeek);
+    if (evalData) {
+      setCurrentMetrics({
+        testObtained: evalData.test_obtained,
+        testTotal: evalData.test_total,
+        testPercentage: evalData.test_percentage,
+        curiosity: evalData.curiosity,
+        understanding: evalData.understanding,
+        creativity: evalData.creativity,
+        problemSolving: evalData.problem_solving,
+      });
+      setNotes(evalData.notes || "");
+    } else {
+      setCurrentMetrics(initialMetric);
+      setNotes("");
+    }
   };
 
   const toggleWeek = (weekNum: number) => {
@@ -131,7 +207,7 @@ export default function EvaluationPage() {
 
   const isWeekExpanded = (weekNum: number) => expandedWeeks.includes(weekNum);
 
-  const calculateWeekTotal = (metrics: MetricScore): number => {
+  const calculateWeekTotal = (metrics: typeof currentMetrics): number => {
     const testScore = (metrics.testPercentage / 100) * 25;
     const otherScore = ((metrics.curiosity + metrics.understanding + metrics.creativity + metrics.problemSolving) / 20) * 75;
     return Math.round(testScore + otherScore);
@@ -143,8 +219,8 @@ export default function EvaluationPage() {
     return "bg-red-500";
   };
 
-  const getPieChartSegments = (metrics: MetricScore) => {
-    const total = metrics.testPercentage + metrics.curiosity + metrics.understanding + metrics.creativity + metrics.problemSolving;
+  const getPieChartSegments = (metrics: typeof currentMetrics) => {
+    const total = metrics.testPercentage + metrics.curiosity * 20 + metrics.understanding * 20 + metrics.creativity * 20 + metrics.problemSolving * 20;
     if (total === 0) return [];
     
     const segments = [
@@ -161,6 +237,10 @@ export default function EvaluationPage() {
       cumulative += (s.value / total) * 360;
       return { ...s, startAngle: start, endAngle: cumulative };
     });
+  };
+
+  const getStudentEvaluation = (studentName: string, week: number) => {
+    return evaluations.find(e => e.student_name === studentName && e.week === week);
   };
 
   return (
@@ -299,25 +379,18 @@ export default function EvaluationPage() {
           <div className="max-w-6xl mx-auto px-4 py-4">
             <div className="flex items-center justify-between">
               <div>
-                <h1 className="text-2xl font-bold text-gray-800">Student Evaluation</h1>
+                <h1 className="text-2xl font-bold text-gray-800">
+                  {isTeacherView ? "Teacher Dashboard" : "Student Evaluation"}
+                </h1>
                 <p className="text-gray-600 mt-1">
-                  {isStudentView ? "Student Dashboard" : "Track student progress weekly"}
+                  {isTeacherView 
+                    ? "Add students and track their progress" 
+                    : "View all students' performance"}
                 </p>
               </div>
-              {!isStudentView && (
-                <div className="flex gap-2">
-                  <Link 
-                    href={`/kashvi/${course}/evaluation/`}
-                    className="px-4 py-2 bg-purple-accent text-white rounded-lg hover:bg-purple-accent/90"
-                  >
-                    Teacher View
-                  </Link>
-                  <Link 
-                    href={`/kashvi/${course}/evaluation/?view=student`}
-                    className="px-4 py-2 bg-gray-200 text-gray-700 rounded-lg hover:bg-gray-300"
-                  >
-                    Student View
-                  </Link>
+              {!isTeacherView && (
+                <div className="text-sm text-gray-500">
+                  Teacher? <Link href={`?view=teacher&pwd=${teacherPassword}`} className="text-purple-accent hover:underline">Login here</Link>
                 </div>
               )}
             </div>
@@ -342,7 +415,8 @@ export default function EvaluationPage() {
             ))}
           </div>
 
-          {!isStudentView && (
+          {/* Teacher Only: Add Student */}
+          {isTeacherView && (
             <div className="bg-white rounded-xl border border-gray-200 p-6 mb-6">
               <h2 className="text-lg font-bold mb-4">Add Student</h2>
               <div className="flex gap-3">
@@ -366,12 +440,12 @@ export default function EvaluationPage() {
                 <div className="mt-4 flex flex-wrap gap-2">
                   {students.map(s => (
                     <span 
-                      key={s.id} 
+                      key={s} 
                       className="px-3 py-1 bg-gray-100 rounded-full text-sm flex items-center gap-2"
                     >
-                      {s.name}
+                      {s}
                       <button 
-                        onClick={() => removeStudent(s.id)}
+                        onClick={() => removeStudent(s)}
                         className="text-red-500 hover:text-red-700"
                       >
                         ×
@@ -383,8 +457,8 @@ export default function EvaluationPage() {
             </div>
           )}
 
-          {/* Evaluation Form (Teacher only) */}
-          {!isStudentView && students.length > 0 && (
+          {/* Teacher Only: Evaluation Form */}
+          {isTeacherView && students.length > 0 && (
             <div className="bg-white rounded-xl border border-gray-200 p-6 mb-6">
               <h2 className="text-lg font-bold mb-4">Evaluate - Week {activeWeek}</h2>
               
@@ -393,12 +467,15 @@ export default function EvaluationPage() {
                   <label className="block text-sm font-medium text-gray-700 mb-1">Select Student</label>
                   <select
                     value={selectedStudent}
-                    onChange={(e) => setSelectedStudent(e.target.value)}
+                    onChange={(e) => {
+                      setSelectedStudent(e.target.value);
+                      loadStudentData(e.target.value);
+                    }}
                     className="w-full px-4 py-2 border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-purple-accent"
                   >
                     <option value="">Select a student</option>
                     {students.map(s => (
-                      <option key={s.id} value={s.id}>{s.name}</option>
+                      <option key={s} value={s}>{s}</option>
                     ))}
                   </select>
                 </div>
@@ -439,12 +516,12 @@ export default function EvaluationPage() {
                       type="range"
                       min="1"
                       max="5"
-                      value={currentMetrics[key as keyof MetricScore]}
-                      onChange={(e) => handleMetricChange(key as keyof MetricScore, Number(e.target.value))}
+                      value={currentMetrics[key as keyof typeof currentMetrics]}
+                      onChange={(e) => handleMetricChange(key, Number(e.target.value))}
                       className="w-full"
                     />
                     <div className="text-center text-sm text-gray-600">
-                      {currentMetrics[key as keyof MetricScore]}/5
+                      {currentMetrics[key as keyof typeof currentMetrics]}/5
                     </div>
                   </div>
                 ))}
@@ -471,6 +548,25 @@ export default function EvaluationPage() {
             </div>
           )}
 
+          {/* Student Selector (Both Views) */}
+          {students.length > 0 && (
+            <div className="bg-white rounded-xl border border-gray-200 p-4 mb-6">
+              <div className="flex items-center gap-4">
+                <span className="text-sm font-medium text-gray-700">Viewing:</span>
+                <select
+                  value={selectedStudent}
+                  onChange={(e) => setSelectedStudent(e.target.value)}
+                  className="flex-1 max-w-xs px-4 py-2 border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-purple-accent"
+                >
+                  <option value="">All Students</option>
+                  {students.map(s => (
+                    <option key={s} value={s}>{s}</option>
+                  ))}
+                </select>
+              </div>
+            </div>
+          )}
+
           {/* Student Dashboards */}
           <div className="mb-4">
             <h2 className="text-lg font-bold mb-4">
@@ -478,27 +574,48 @@ export default function EvaluationPage() {
             </h2>
           </div>
 
-          {students.length === 0 ? (
+          {loading ? (
             <div className="bg-white rounded-xl border border-gray-200 p-8 text-center">
-              <p className="text-gray-500">No students added yet. Add students above to start evaluating.</p>
+              <p className="text-gray-500">Loading...</p>
+            </div>
+          ) : students.length === 0 ? (
+            <div className="bg-white rounded-xl border border-gray-200 p-8 text-center">
+              <p className="text-gray-500">
+                {isTeacherView 
+                  ? "No students added yet. Add students above to start evaluating." 
+                  : "No evaluation data available yet."}
+              </p>
+              {isTeacherView && (
+                <p className="text-sm text-gray-400 mt-2">Add URL parameter ?view=teacher&pwd=your_password to access teacher view</p>
+              )}
             </div>
           ) : (
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-              {students.map(student => {
-                const weekData = student.weeks[activeWeek];
-                const metrics = weekData?.metrics;
+              {students
+                .filter(s => !selectedStudent || s === selectedStudent)
+                .map(studentName => {
+                const evalData = getStudentEvaluation(studentName, activeWeek);
+                const metrics = evalData ? {
+                  testObtained: evalData.test_obtained,
+                  testTotal: evalData.test_total,
+                  testPercentage: evalData.test_percentage,
+                  curiosity: evalData.curiosity,
+                  understanding: evalData.understanding,
+                  creativity: evalData.creativity,
+                  problemSolving: evalData.problem_solving,
+                } : null;
                 const totalScore = metrics ? calculateWeekTotal(metrics) : 0;
                 const segments = metrics ? getPieChartSegments(metrics) : [];
                 
                 return (
                   <div 
-                    key={student.id}
-                    className={`bg-white rounded-xl border-2 ${weekData?.isFilled ? 'border-purple-200' : 'border-gray-200'} overflow-hidden`}
+                    key={studentName}
+                    className={`bg-white rounded-xl border-2 ${evalData ? 'border-purple-200' : 'border-gray-200'} overflow-hidden`}
                   >
-                    <div className={`${weekData?.isFilled ? 'bg-purple-50' : 'bg-gray-50'} px-4 py-3 border-b border-gray-200`}>
+                    <div className={`${evalData ? 'bg-purple-50' : 'bg-gray-50'} px-4 py-3 border-b border-gray-200`}>
                       <div className="flex items-center justify-between">
-                        <h3 className="font-bold text-gray-800">{student.name}</h3>
-                        {weekData?.isFilled && (
+                        <h3 className="font-bold text-gray-800">{studentName}</h3>
+                        {evalData && (
                           <span className={`px-2 py-1 rounded-full text-xs font-bold text-white ${getPerformanceColor(totalScore)}`}>
                             {totalScore}%
                           </span>
@@ -507,7 +624,7 @@ export default function EvaluationPage() {
                     </div>
 
                     <div className="p-4">
-                      {!weekData?.isFilled ? (
+                      {!evalData ? (
                         <p className="text-gray-500 text-center py-4">No evaluation yet</p>
                       ) : (
                         <>
@@ -516,13 +633,13 @@ export default function EvaluationPage() {
                             <div className="flex justify-between text-sm">
                               <span className="text-gray-600">Test</span>
                               <span className="font-medium">
-                                {metrics.testObtained}/{metrics.testTotal} ({metrics.testPercentage}%)
+                                {metrics?.testObtained}/{metrics?.testTotal} ({metrics?.testPercentage}%)
                               </span>
                             </div>
                             <div className="w-full bg-gray-200 rounded-full h-2 mt-1">
                               <div 
                                 className="bg-purple-500 h-2 rounded-full" 
-                                style={{ width: `${metrics.testPercentage}%` }}
+                                style={{ width: `${metrics?.testPercentage}%` }}
                               />
                             </div>
                           </div>
@@ -541,10 +658,10 @@ export default function EvaluationPage() {
                                   <div className="w-16 bg-gray-200 rounded-full h-2">
                                     <div 
                                       className={`${color} h-2 rounded-full`} 
-                                      style={{ width: `${(metrics[key as keyof MetricScore] as number / 5) * 100}%` }}
+                                      style={{ width: `${(metrics?.[key as keyof typeof metrics] as number / 5) * 100}%` }}
                                     />
                                   </div>
-                                  <span className="text-sm font-medium w-6">{metrics[key as keyof MetricScore]}</span>
+                                  <span className="text-sm font-medium w-6">{metrics?.[key as keyof typeof metrics]}</span>
                                 </div>
                               </div>
                             ))}
