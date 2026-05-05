@@ -404,7 +404,11 @@ print(fruits)                   # ['apple', 'banana', 'mango', 'mango']
 # Coming Up — Day 3
 
 **??**
-`
+`,
+  "2-3":
+    '# Week 2, Day 3 - Presentation on Lists\n\n# Presentation on Lists\n\n**??**',
+  "2-4":
+    '# Week 2, Day 4 - Presentation on Tuples and Sets\n\n# Presentation on Tuples and Sets\n\n**??**'
 };
 
 export default function CoursePage(props: {
