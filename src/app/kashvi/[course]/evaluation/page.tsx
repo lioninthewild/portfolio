@@ -1,17 +1,17 @@
 "use client";
-// triggers redeploy
-import { useState, useEffect } from "react";
-import Link from "next/link";
+import { useState, useEffect, useRef } from "react";
 import { useParams, useSearchParams } from "next/navigation";
-import { supabase } from "@/lib/supabase";
+import { 
+  Radar, RadarChart, PolarGrid, PolarAngleAxis, PolarRadiusAxis, 
+  BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, Legend, 
+  ResponsiveContainer, Cell 
+} from 'recharts';
 
 const weeks = [1, 2, 3, 4, 5, 6];
 
 interface EvaluationData {
-  id?: number;
   student_name: string;
   week: number;
-  course: string;
   test_obtained: number;
   test_total: number;
   test_percentage: number;
@@ -20,7 +20,11 @@ interface EvaluationData {
   creativity: number;
   problem_solving: number;
   notes: string;
-  created_at?: string;
+}
+
+interface StoredData {
+  students: string[];
+  evaluations: Record<string, Record<number, EvaluationData>>;
 }
 
 const initialMetric = {
@@ -33,84 +37,132 @@ const initialMetric = {
   problemSolving: 3,
 };
 
+const TEACHER_PASSWORD = process.env.NEXT_PUBLIC_TEACHER_PASSWORD || "kashvi2024";
+
+function getStorageKey(course: string) {
+  return `kashvi_evaluations_${course}`;
+}
+
 export default function EvaluationPage() {
   const params = useParams();
   const searchParams = useSearchParams();
-  const course = params?.course || "python";
+  const course = Array.isArray(params?.course) ? params.course[0] : (params?.course || "python");
+  const fileInputRef = useRef<HTMLInputElement>(null);
   
-  // View mode logic
   const viewMode = searchParams.get("view") || "student";
   const password = searchParams.get("pwd") || "";
-  const teacherPassword = process.env.NEXT_PUBLIC_TEACHER_PASSWORD || "";
-  const isTeacherView = viewMode === "teacher" && password === teacherPassword;
+  const isTeacherView = viewMode === "teacher" && password === TEACHER_PASSWORD;
 
   const [activeWeek, setActiveWeek] = useState(1);
   const [students, setStudents] = useState<string[]>([]);
-  const [evaluations, setEvaluations] = useState<EvaluationData[]>([]);
+  const [evaluations, setEvaluations] = useState<Record<string, Record<number, EvaluationData>>>({});
   const [newStudentName, setNewStudentName] = useState("");
   const [selectedStudent, setSelectedStudent] = useState("");
   const [currentMetrics, setCurrentMetrics] = useState(initialMetric);
   const [notes, setNotes] = useState("");
-  const [isMinimized, setIsMinimized] = useState(false);
   const [expandedWeeks, setExpandedWeeks] = useState<number[]>([]);
   const [loading, setLoading] = useState(true);
+  const [dataLoaded, setDataLoaded] = useState(false);
+  
+  // Presentation mode state
+  const [isPresentationMode, setIsPresentationMode] = useState(false);
+  const [selectedStudentForPresentation, setSelectedStudentForPresentation] = useState("");
+  const [selectedWeekForPresentation, setSelectedWeekForPresentation] = useState(1);
+  const [showClassAverage, setShowClassAverage] = useState(false);
 
-  // Load data from Supabase
+  // Load data from localStorage
   useEffect(() => {
-    fetchEvaluations();
-  }, [course, activeWeek]);
-
-  const fetchEvaluations = async () => {
-    setLoading(true);
+    if (!isTeacherView) return;
+    
     try {
-      const { data, error } = await supabase
-        .from('student_evaluations')
-        .select('*')
-        .eq('course', course)
-        .order('student_name', { ascending: true })
-        .order('week', { ascending: true });
-
-      if (error) throw error;
-      
-      setEvaluations(data || []);
-      
-      // Extract unique student names
-      const uniqueStudents = [...new Set(data?.map(e => e.student_name) || [])];
-      setStudents(uniqueStudents);
+      const stored = localStorage.getItem(getStorageKey(course));
+      if (stored) {
+        const data: StoredData = JSON.parse(stored);
+        setStudents(data.students || []);
+        setEvaluations(data.evaluations || {});
+      }
+      setDataLoaded(true);
     } catch (error) {
-      console.error('Error fetching evaluations:', error);
+      console.error('Error loading data:', error);
     } finally {
       setLoading(false);
     }
+  }, [course, isTeacherView]);
+
+  // Save to localStorage
+  const saveToLocalStorage = () => {
+    try {
+      const data: StoredData = { students, evaluations };
+      localStorage.setItem(getStorageKey(course), JSON.stringify(data));
+    } catch (error) {
+      console.error('Error saving data:', error);
+    }
   };
 
-  const addStudent = async () => {
-    if (!newStudentName.trim()) return;
+  // Export backup
+  const exportBackup = () => {
+    const data: StoredData = { students, evaluations };
+    const json = JSON.stringify(data, null, 2);
+    const blob = new Blob([json], { type: "application/json" });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement("a");
+    a.href = url;
+    a.download = `evaluation_backup_${course}_${new Date().toISOString().split('T')[0]}.json`;
+    a.click();
+    URL.revokeObjectURL(url);
+  };
+
+  // Import backup
+  const importBackup = (event: React.ChangeEvent<HTMLInputElement>) => {
+    const file = event.target.files?.[0];
+    if (!file) return;
     
+    const reader = new FileReader();
+    reader.onload = (e) => {
+      try {
+        const data: StoredData = JSON.parse(e.target?.result as string);
+        if (data.students && data.evaluations) {
+          setStudents(data.students);
+          setEvaluations(data.evaluations);
+          localStorage.setItem(getStorageKey(course), JSON.stringify(data));
+          alert('Backup restored successfully!');
+        } else {
+          alert('Invalid backup file format');
+        }
+      } catch (error) {
+        alert('Error reading backup file');
+      }
+    };
+    reader.readAsText(file);
+    if (fileInputRef.current) fileInputRef.current.value = "";
+  };
+
+  // Clear all data
+  const clearAllData = () => {
+    if (!confirm("Are you sure you want to delete ALL evaluation data? This cannot be undone!")) return;
+    setStudents([]);
+    setEvaluations({});
+    localStorage.removeItem(getStorageKey(course));
+    alert('All data cleared!');
+  };
+
+  const addStudent = () => {
+    if (!newStudentName.trim()) return;
     const newName = newStudentName.trim();
     if (!students.includes(newName)) {
       setStudents([...students, newName]);
     }
     setNewStudentName("");
+    saveToLocalStorage();
   };
 
-  const removeStudent = async (studentName: string) => {
+  const removeStudent = (studentName: string) => {
     if (!confirm(`Delete all evaluations for ${studentName}?`)) return;
-    
-    try {
-      const { error } = await supabase
-        .from('student_evaluations')
-        .delete()
-        .eq('student_name', studentName)
-        .eq('course', course);
-
-      if (error) throw error;
-      
-      setStudents(students.filter(s => s !== studentName));
-      fetchEvaluations();
-    } catch (error) {
-      console.error('Error deleting student:', error);
-    }
+    const newEvaluations = { ...evaluations };
+    delete newEvaluations[studentName];
+    setStudents(students.filter(s => s !== studentName));
+    setEvaluations(newEvaluations);
+    saveToLocalStorage();
   };
 
   const handleMetricChange = (field: string, value: number) => {
@@ -123,13 +175,12 @@ export default function EvaluationPage() {
     setCurrentMetrics(updated);
   };
 
-  const saveEvaluation = async () => {
+  const saveEvaluation = () => {
     if (!selectedStudent) return;
     
-    const evalData = {
+    const evalData: EvaluationData = {
       student_name: selectedStudent,
       week: activeWeek,
-      course: course,
       test_obtained: currentMetrics.testObtained,
       test_total: currentMetrics.testTotal,
       test_percentage: currentMetrics.testPercentage,
@@ -140,584 +191,544 @@ export default function EvaluationPage() {
       notes: notes,
     };
 
-    try {
-      // Check if evaluation exists for this student/week
-      const { data: existing } = await supabase
-        .from('student_evaluations')
-        .select('id')
-        .eq('student_name', selectedStudent)
-        .eq('week', activeWeek)
-        .eq('course', course)
-        .maybeSingle();
-
-      if (existing) {
-        // Update existing
-        const { error } = await supabase
-          .from('student_evaluations')
-          .update(evalData)
-          .eq('id', existing.id);
-        
-        if (error) throw error;
-      } else {
-        // Insert new
-        const { error } = await supabase
-          .from('student_evaluations')
-          .insert(evalData);
-        
-        if (error) throw error;
-      }
-
-      setSelectedStudent("");
-      setCurrentMetrics(initialMetric);
-      setNotes("");
-      fetchEvaluations();
-      alert('Evaluation saved!');
-    } catch (error) {
-      console.error('Error saving evaluation:', error);
-      alert('Error saving evaluation');
-    }
+    const newEvaluations = {
+      ...evaluations,
+      [selectedStudent]: {
+        ...(evaluations[selectedStudent] || {}),
+        [activeWeek]: evalData,
+      },
+    };
+    
+    setEvaluations(newEvaluations);
+    saveToLocalStorage();
+    
+    setSelectedStudent("");
+    setCurrentMetrics(initialMetric);
+    setNotes("");
+    alert('Evaluation saved!');
   };
 
-  const loadStudentData = (studentName: string) => {
-    const evalData = evaluations.find(e => e.student_name === studentName && e.week === activeWeek);
-    if (evalData) {
-      setCurrentMetrics({
-        testObtained: evalData.test_obtained,
-        testTotal: evalData.test_total,
-        testPercentage: evalData.test_percentage,
-        curiosity: evalData.curiosity,
-        understanding: evalData.understanding,
-        creativity: evalData.creativity,
-        problemSolving: evalData.problem_solving,
+  const getEvaluation = (studentName: string, week: number): EvaluationData | undefined => {
+    return evaluations[studentName]?.[week];
+  };
+
+  // Get radar chart data for a student/week
+  const getRadarData = () => {
+    const data = [];
+    
+    if (showClassAverage) {
+      // Calculate class averages
+      let totals = { curiosity: 0, understanding: 0, creativity: 0, problem_solving: 0, test: 0, count: 0 };
+      students.forEach(student => {
+        const evalData = getEvaluation(student, selectedWeekForPresentation);
+        if (evalData) {
+          totals.curiosity += evalData.curiosity;
+          totals.understanding += evalData.understanding;
+          totals.creativity += evalData.creativity;
+          totals.problem_solving += evalData.problem_solving;
+          totals.test += evalData.test_percentage;
+          totals.count++;
+        }
       });
-      setNotes(evalData.notes || "");
+      
+      if (totals.count > 0) {
+        data.push({ subject: 'Curiosity', value: Math.round(totals.curiosity / totals.count), fullMark: 5 });
+        data.push({ subject: 'Understanding', value: Math.round(totals.understanding / totals.count), fullMark: 5 });
+        data.push({ subject: 'Creativity', value: Math.round(totals.creativity / totals.count), fullMark: 5 });
+        data.push({ subject: 'Problem Solving', value: Math.round(totals.problem_solving / totals.count), fullMark: 5 });
+        data.push({ subject: 'Test Score', value: Math.round(totals.test / totals.count / 20), fullMark: 5 });
+      }
     } else {
-      setCurrentMetrics(initialMetric);
-      setNotes("");
+      const evalData = getEvaluation(selectedStudentForPresentation, selectedWeekForPresentation);
+      if (evalData) {
+        data.push({ subject: 'Curiosity', value: evalData.curiosity, fullMark: 5 });
+        data.push({ subject: 'Understanding', value: evalData.understanding, fullMark: 5 });
+        data.push({ subject: 'Creativity', value: evalData.creativity, fullMark: 5 });
+        data.push({ subject: 'Problem Solving', value: evalData.problem_solving, fullMark: 5 });
+        data.push({ subject: 'Test Score', value: Math.round(evalData.test_percentage / 20), fullMark: 5 });
+      }
     }
+    
+    return data;
   };
 
-  const toggleWeek = (weekNum: number) => {
-    setExpandedWeeks(prev => 
-      prev.includes(weekNum) 
-        ? prev.filter(n => n !== weekNum)
-        : [...prev, weekNum]
+  // Get bar chart data for a student/week (test score only, out of 30)
+  const getBarData = () => {
+    const data = [];
+    
+    if (showClassAverage) {
+      let testTotal = 0, count = 0;
+      students.forEach(student => {
+        const evalData = getEvaluation(student, selectedWeekForPresentation);
+        if (evalData) {
+          testTotal += evalData.test_obtained;
+          count++;
+        }
+      });
+      
+      if (count > 0) {
+        data.push({ name: 'Test Score (out of 30)', value: Math.round(testTotal / count), fill: '#8b5cf6' });
+      }
+    } else {
+      const evalData = getEvaluation(selectedStudentForPresentation, selectedWeekForPresentation);
+      if (evalData) {
+        data.push({ name: 'Test Score (out of 30)', value: evalData.test_obtained, fill: '#8b5cf6' });
+      }
+    }
+    
+    return data;
+  };
+
+  // Get notes for display
+  const getDisplayNotes = (): string => {
+    if (showClassAverage) return "Class average does not have specific feedback.";
+    const evalData = getEvaluation(selectedStudentForPresentation, selectedWeekForPresentation);
+    return evalData?.notes || "No feedback recorded for this week.";
+  };
+
+  // Access Denied for non-teachers
+  if (!isTeacherView) {
+    return (
+      <div className="min-h-screen bg-gradient-to-br from-gray-900 to-gray-800 flex items-center justify-center p-4">
+        <div className="max-w-md w-full bg-gray-800 rounded-xl shadow-2xl p-8 text-center">
+          <div className="w-16 h-16 bg-red-500/20 rounded-full flex items-center justify-center mx-auto mb-4">
+            <svg className="w-8 h-8 text-red-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z" />
+            </svg>
+          </div>
+          <h1 className="text-2xl font-bold text-white mb-2">Access Denied</h1>
+          <p className="text-gray-400 mb-4">
+            This evaluation system is for teachers only.
+          </p>
+          <p className="text-sm text-gray-500">
+            If you are a teacher, please use the correct URL with teacher password.
+          </p>
+        </div>
+      </div>
     );
-  };
+  }
 
-  const isWeekExpanded = (weekNum: number) => expandedWeeks.includes(weekNum);
-
-  const calculateWeekTotal = (metrics: typeof currentMetrics): number => {
-    const testScore = (metrics.testPercentage / 100) * 25;
-    const otherScore = ((metrics.curiosity + metrics.understanding + metrics.creativity + metrics.problemSolving) / 20) * 75;
-    return Math.round(testScore + otherScore);
-  };
-
-  const getPerformanceColor = (score: number): string => {
-    if (score >= 80) return "bg-green-500";
-    if (score >= 60) return "bg-yellow-500";
-    return "bg-red-500";
-  };
-
-  const getPieChartSegments = (metrics: typeof currentMetrics) => {
-    const total = metrics.testPercentage + metrics.curiosity * 20 + metrics.understanding * 20 + metrics.creativity * 20 + metrics.problemSolving * 20;
-    if (total === 0) return [];
-    
-    const segments = [
-      { label: "Test", value: metrics.testPercentage, color: "#9333ea" },
-      { label: "Curiosity", value: metrics.curiosity * 20, color: "#3b82f6" },
-      { label: "Understanding", value: metrics.understanding * 20, color: "#10b981" },
-      { label: "Creativity", value: metrics.creativity * 20, color: "#f59e0b" },
-      { label: "Problem Solving", value: metrics.problemSolving * 20, color: "#ef4444" },
-    ];
-    
-    let cumulative = 0;
-    return segments.map(s => {
-      const start = cumulative;
-      cumulative += (s.value / total) * 360;
-      return { ...s, startAngle: start, endAngle: cumulative };
-    });
-  };
-
-  const getStudentEvaluation = (studentName: string, week: number) => {
-    return evaluations.find(e => e.student_name === studentName && e.week === week);
-  };
+  // Loading state
+  if (loading || !dataLoaded) {
+    return (
+      <div className="min-h-screen bg-gray-900 flex items-center justify-center">
+        <div className="text-white">Loading...</div>
+      </div>
+    );
+  }
 
   return (
-    <div className="flex min-h-screen bg-gray-50">
-      {/* Sidebar */}
-      <aside
-        className={`bg-surface-container-low border-r border-gray-200 transition-all duration-300 fixed lg:relative z-20 h-full ${
-          isMinimized ? "w-16" : "w-64"
-        }`}
-      >
-        <div className="p-4">
-          <button
-            onClick={() => setIsMinimized(!isMinimized)}
-            className="hidden lg:flex items-center justify-center w-8 h-8 rounded-lg bg-surface-container-high hover:bg-surface-container-highest transition-colors mb-4"
-          >
-            <svg
-              className={`w-5 h-5 transition-transform ${isMinimized ? "rotate-180" : ""}`}
-              fill="none"
-              stroke="currentColor"
-              viewBox="0 0 24 24"
-            >
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M11 19l-7-7 7-7m8 14l-7-7 7-7" />
-            </svg>
-          </button>
+    <div className="min-h-screen bg-gray-900 text-white p-4 lg:p-8">
+      <div className="max-w-6xl mx-auto">
+        {/* Header */}
+        <div className="flex flex-col lg:flex-row lg:items-center lg:justify-between gap-4 mb-8">
+          <div>
+            <h1 className="text-3xl font-bold">Student Evaluations</h1>
+            <p className="text-gray-400">Course: {course.toUpperCase()}</p>
+          </div>
           
-          <nav className="space-y-1">
-            {!isMinimized && (
-              <span className="block text-xs font-semibold text-gray-500 uppercase tracking-wider mb-3 px-2">
-                Course Content
-              </span>
-            )}
+          <div className="flex flex-wrap gap-2">
+            <button
+              onClick={exportBackup}
+              className="px-4 py-2 bg-green-600 hover:bg-green-700 rounded-lg font-medium flex items-center gap-2"
+            >
+              <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4" />
+              </svg>
+              Export Backup
+            </button>
             
-            <Link
-              href={`/kashvi/${course}/course`}
-              className={`w-full flex items-center gap-3 p-2 rounded-lg hover:bg-surface-container-high transition-colors ${
-                isMinimized ? "justify-center" : ""
-              }`}
-            >
-              <svg className="w-5 h-5 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6" />
-              </svg>
-              {!isMinimized && <span className="text-sm font-medium truncate">Home</span>}
-            </Link>
-
             <button
-              onClick={() => window.location.href = `/kashvi/${course}/course?view=orientation`}
-              className={`w-full flex items-center gap-3 p-2 rounded-lg hover:bg-surface-container-high transition-colors ${
-                isMinimized ? "justify-center" : ""
-              }`}
+              onClick={() => fileInputRef.current?.click()}
+              className="px-4 py-2 bg-blue-600 hover:bg-blue-700 rounded-lg font-medium flex items-center gap-2"
             >
-              <svg className="w-5 h-5 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.832 18.477 18.247 18 16.5 18c-1.746 0-3.332.477-4.5 1.253" />
+              <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-8l-4-4m0 0L8 8m4-4v12" />
               </svg>
-              {!isMinimized && <span className="text-sm font-medium truncate">Orientation</span>}
+              Import Backup
             </button>
-
-            {[
-              { num: 1, title: "Week 1: Building Blocks" },
-              { num: 2, title: "Week 2: Talking To The Machine" },
-              { num: 3, title: "Week 3: Building Logic" },
-              { num: 4, title: "Week 4: Functions" },
-              { num: 5, title: "Week 5: Current Trends" },
-              { num: 6, title: "Week 6: Productivity With AI" },
-            ].map((week) => (
-              <div key={week.num}>
-                <button
-                  onClick={() => toggleWeek(week.num)}
-                  className={`w-full flex items-center gap-3 p-2 rounded-lg hover:bg-surface-container-high transition-colors ${
-                    isMinimized ? "justify-center" : ""
-                  }`}
-                >
-                  <svg 
-                    className={`w-4 h-4 transition-transform ${isWeekExpanded(week.num) ? "rotate-90" : ""} flex-shrink-0`}
-                    fill="none" 
-                    stroke="currentColor" 
-                    viewBox="0 0 24 24"
-                  >
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
-                  </svg>
-                  {!isMinimized && (
-                    <>
-                      <span className="flex items-center justify-center w-6 h-6 rounded-full bg-purple-accent text-white text-xs font-bold flex-shrink-0">
-                        {week.num}
-                      </span>
-                      <span className="text-sm font-medium truncate">{week.title}</span>
-                    </>
-                  )}
-                </button>
-
-                {!isMinimized && isWeekExpanded(week.num) && (
-                  <div className="ml-8 mt-1 space-y-1">
-                    {[1,2,3,4,5,6].map((day) => (
-                      <Link
-                        key={day}
-                        href={`/kashvi/${course}/course?view=week${week.num}&day=${day}`}
-                        className="w-full flex items-center gap-2 p-2 rounded-lg hover:bg-surface-container-high transition-colors text-sm text-gray-600"
-                      >
-                        <span>Day {day}</span>
-                      </Link>
-                    ))}
-                  </div>
-                )}
-              </div>
-            ))}
-
+            <input
+              ref={fileInputRef}
+              type="file"
+              accept=".json"
+              onChange={importBackup}
+              className="hidden"
+            />
+            
             <button
-              onClick={() => window.location.href = `/kashvi/${course}/tiy/`}
-              className={`w-full flex items-center gap-3 p-2 rounded-lg hover:bg-surface-container-high transition-colors ${
-                isMinimized ? "justify-center" : ""
-              }`}
+              onClick={clearAllData}
+              className="px-4 py-2 bg-red-600 hover:bg-red-700 rounded-lg font-medium flex items-center gap-2"
             >
-              <svg className="w-5 h-5 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2m-6 9l2 2 4-4" />
+              <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
               </svg>
-              {!isMinimized && <span className="text-sm font-medium truncate">Try It Yourself</span>}
+              Clear All
             </button>
-
+            
             <button
-              onClick={() => window.location.href = `/kashvi/${course}/evaluation/`}
-              className={`w-full flex items-center gap-3 p-2 rounded-lg hover:bg-surface-container-high transition-colors ${
-                isMinimized ? "justify-center" : ""
-              }`}
+              onClick={() => {
+                if (students.length > 0) {
+                  setSelectedStudentForPresentation(students[0]);
+                  setSelectedWeekForPresentation(1);
+                  setIsPresentationMode(true);
+                } else {
+                  alert("Add some students first to present!");
+                }
+              }}
+              className="px-4 py-2 bg-yellow-500 hover:bg-yellow-600 rounded-lg font-medium flex items-center gap-2"
             >
-              <svg className="w-5 h-5 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z" />
+              <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 10l4.553-2.276A1 1 0 0121 8.618v6.764a1 1 0 01-1.447.894L15 14M5 18h8a2 2 0 002-2V8a2 2 0 00-2-2H5a2 2 0 00-2 2v8a2 2 0 002 2z" />
               </svg>
-              {!isMinimized && <span className="text-sm font-medium truncate">Evaluation</span>}
+              Present to Class
             </button>
-          </nav>
+          </div>
         </div>
-      </aside>
 
-      {/* Main Content */}
-      <main className="flex-1 overflow-auto">
-        <header className="bg-white shadow-sm border-b border-gray-200">
-          <div className="max-w-6xl mx-auto px-4 py-4">
-            <div className="flex items-center justify-between">
-              <div>
-                <h1 className="text-2xl font-bold text-gray-800">
-                  {isTeacherView ? "Teacher Dashboard" : "Student Evaluation"}
-                </h1>
-                <p className="text-gray-600 mt-1">
-                  {isTeacherView 
-                    ? "Add students and track their progress" 
-                    : "View all students' performance"}
-                </p>
-              </div>
-              {!isTeacherView && (
-                <div className="text-sm text-gray-500">
-                  Teacher? <Link href={`?view=teacher&pwd=${teacherPassword}`} className="text-purple-accent hover:underline">Login here</Link>
+        {/* Presentation Mode Overlay */}
+        {isPresentationMode && (
+          <div className="fixed inset-0 bg-black/90 z-50 overflow-auto">
+            <div className="min-h-screen p-8">
+              {/* Presentation Header */}
+              <div className="flex flex-col lg:flex-row lg:items-center justify-between gap-4 mb-8">
+                <div>
+                  <h1 className="text-3xl font-bold text-yellow-400">🎯 Presenting to Class</h1>
+                  <p className="text-gray-400">Show student performance to the class</p>
                 </div>
-              )}
-            </div>
-          </div>
-        </header>
-
-        <div className="max-w-6xl mx-auto px-4 py-6">
-          {/* Week Tabs */}
-          <div className="flex gap-2 mb-6 overflow-x-auto pb-2">
-            {weeks.map(week => (
-              <button
-                key={week}
-                onClick={() => setActiveWeek(week)}
-                className={`px-4 py-2 rounded-lg font-medium transition-colors whitespace-nowrap ${
-                  activeWeek === week 
-                    ? "bg-purple-accent text-white" 
-                    : "bg-white text-gray-600 hover:bg-gray-100 border border-gray-200"
-                }`}
-              >
-                Week {week}
-              </button>
-            ))}
-          </div>
-
-          {/* Teacher Only: Add Student */}
-          {isTeacherView && (
-            <div className="bg-white rounded-xl border border-gray-200 p-6 mb-6">
-              <h2 className="text-lg font-bold mb-4">Add Student</h2>
-              <div className="flex gap-3">
-                <input
-                  type="text"
-                  value={newStudentName}
-                  onChange={(e) => setNewStudentName(e.target.value)}
-                  placeholder="Enter student name"
-                  className="flex-1 px-4 py-2 border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-purple-accent"
-                  onKeyPress={(e) => e.key === "Enter" && addStudent()}
-                />
+                
                 <button
-                  onClick={addStudent}
-                  className="px-4 py-2 bg-green-500 text-white rounded-lg hover:bg-green-600"
+                  onClick={() => setIsPresentationMode(false)}
+                  className="px-6 py-3 bg-red-600 hover:bg-red-700 rounded-lg font-bold text-lg"
                 >
-                  Add
+                  ✕ Exit Presentation
                 </button>
               </div>
 
-              {students.length > 0 && (
-                <div className="mt-4 flex flex-wrap gap-2">
-                  {students.map(s => (
-                    <span 
-                      key={s} 
-                      className="px-3 py-1 bg-gray-100 rounded-full text-sm flex items-center gap-2"
+              {/* Controls */}
+              <div className="bg-gray-800 rounded-xl p-6 mb-8">
+                <div className="flex flex-col lg:flex-row gap-4 items-center">
+                  <div className="flex-1">
+                    <label className="block text-sm text-gray-400 mb-1">Student</label>
+                    <select
+                      value={selectedStudentForPresentation}
+                      onChange={(e) => setSelectedStudentForPresentation(e.target.value)}
+                      className="w-full px-4 py-3 bg-gray-700 rounded-lg border border-gray-600 focus:border-yellow-500 focus:outline-none text-lg"
                     >
-                      {s}
-                      <button 
-                        onClick={() => removeStudent(s)}
-                        className="text-red-500 hover:text-red-700"
-                      >
-                        ×
-                      </button>
-                    </span>
-                  ))}
+                      {students.map(student => (
+                        <option key={student} value={student}>{student}</option>
+                      ))}
+                    </select>
+                  </div>
+                  
+                  <div className="flex-1">
+                    <label className="block text-sm text-gray-400 mb-1">Week</label>
+                    <select
+                      value={selectedWeekForPresentation}
+                      onChange={(e) => setSelectedWeekForPresentation(Number(e.target.value))}
+                      className="w-full px-4 py-3 bg-gray-700 rounded-lg border border-gray-600 focus:border-yellow-500 focus:outline-none text-lg"
+                    >
+                      {weeks.map(w => (
+                        <option key={w} value={w}>Week {w}</option>
+                      ))}
+                    </select>
+                  </div>
+                  
+                  <div className="flex items-center gap-3">
+                    <input
+                      type="checkbox"
+                      id="classAverage"
+                      checked={showClassAverage}
+                      onChange={(e) => setShowClassAverage(e.target.checked)}
+                      className="w-5 h-5 accent-yellow-500"
+                    />
+                    <label htmlFor="classAverage" className="text-lg font-medium">Show Class Average</label>
+                  </div>
                 </div>
+              </div>
+
+              {/* Charts */}
+              <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 mb-8">
+                {/* Radar Chart */}
+                <div className="bg-gray-800 rounded-xl p-6">
+                  <h2 className="text-xl font-bold mb-4 text-center">
+                    {showClassAverage ? "Class Average - Soft Skills" : `${selectedStudentForPresentation} - Soft Skills (Week ${selectedWeekForPresentation})`}
+                  </h2>
+                  <div className="h-80">
+                    <ResponsiveContainer width="100%" height="100%">
+                      <RadarChart data={getRadarData()}>
+                        <PolarGrid stroke="#4b5563" />
+                        <PolarAngleAxis dataKey="subject" tick={{ fill: '#9ca3af', fontSize: 14 }} />
+                        <PolarRadiusAxis angle={30} domain={[0, 5]} tick={{ fill: '#6b7280' }} />
+                        <Radar
+                          name="Score"
+                          dataKey="value"
+                          stroke="#f59e0b"
+                          fill="#f59e0b"
+                          fillOpacity={0.5}
+                        />
+                        <Tooltip 
+                          contentStyle={{ backgroundColor: '#1f2937', border: '1px solid #4b5563' }}
+                          labelStyle={{ color: '#f59e0b' }}
+                        />
+                      </RadarChart>
+                    </ResponsiveContainer>
+                  </div>
+                </div>
+
+                {/* Bar Chart */}
+                <div className="bg-gray-800 rounded-xl p-6">
+                  <h2 className="text-xl font-bold mb-4 text-center">
+                    {showClassAverage ? "Class Average - Scores" : `${selectedStudentForPresentation} - Scores (Week ${selectedWeekForPresentation})`}
+                  </h2>
+                  <div className="h-80">
+                    <ResponsiveContainer width="100%" height="100%">
+                      <BarChart data={getBarData()} layout="vertical">
+                        <CartesianGrid strokeDasharray="3 3" stroke="#4b5563" />
+                        <XAxis type="number" domain={[0, 30]} tick={{ fill: '#9ca3af' }} />
+                        <YAxis type="category" dataKey="name" tick={{ fill: '#9ca3af', fontSize: 14 }} width={160} />
+                        <Tooltip 
+                          contentStyle={{ backgroundColor: '#1f2937', border: '1px solid #4b5563' }}
+                          formatter={(value) => [`${value}/30`, 'Score']}
+                        />
+                        <Bar dataKey="value" radius={[0, 4, 4, 0]}>
+                          {getBarData().map((entry, index) => (
+                            <Cell key={`cell-${index}`} fill={entry.fill} />
+                          ))}
+                        </Bar>
+                      </BarChart>
+                    </ResponsiveContainer>
+                  </div>
+                </div>
+              </div>
+
+              {/* Notes/Feedback */}
+              <div className="bg-gray-800 rounded-xl p-6">
+                <h2 className="text-xl font-bold mb-4">📝 Teacher's Feedback</h2>
+                <div className="bg-gray-700 rounded-lg p-4 min-h-[100px]">
+                  <p className="text-lg text-gray-200">{getDisplayNotes()}</p>
+                </div>
+              </div>
+            </div>
+          </div>
+        )}
+
+        {/* Main Grid */}
+        <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
+          {/* Left: Student List */}
+          <div className="bg-gray-800 rounded-xl p-6">
+            <h2 className="text-xl font-bold mb-4">Students</h2>
+            
+            <div className="flex gap-2 mb-4">
+              <input
+                type="text"
+                value={newStudentName}
+                onChange={(e) => setNewStudentName(e.target.value)}
+                placeholder="Add student name"
+                className="flex-1 px-3 py-2 bg-gray-700 rounded-lg border border-gray-600 focus:border-purple-500 focus:outline-none"
+                onKeyDown={(e) => e.key === "Enter" && addStudent()}
+              />
+              <button
+                onClick={addStudent}
+                className="px-4 py-2 bg-purple-600 hover:bg-purple-700 rounded-lg"
+              >
+                Add
+              </button>
+            </div>
+
+            <div className="space-y-2 max-h-96 overflow-y-auto">
+              {students.length === 0 ? (
+                <p className="text-gray-500 text-center py-4">No students added yet</p>
+              ) : (
+                students.map((student) => (
+                  <div
+                    key={student}
+                    className={`flex items-center justify-between p-3 rounded-lg cursor-pointer transition-colors ${
+                      selectedStudent === student ? "bg-purple-600" : "bg-gray-700 hover:bg-gray-600"
+                    }`}
+                    onClick={() => {
+                      setSelectedStudent(student);
+                      setActiveWeek(1);
+                    }}
+                  >
+                    <span className="font-medium">{student}</span>
+                    <button
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        removeStudent(student);
+                      }}
+                      className="text-gray-400 hover:text-red-400 p-1"
+                    >
+                      <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+                      </svg>
+                    </button>
+                  </div>
+                ))
               )}
             </div>
-          )}
+          </div>
 
-          {/* Teacher Only: Evaluation Form */}
-          {isTeacherView && students.length > 0 && (
-            <div className="bg-white rounded-xl border border-gray-200 p-6 mb-6">
-              <h2 className="text-lg font-bold mb-4">Evaluate - Week {activeWeek}</h2>
-              
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
-                <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-1">Select Student</label>
+          {/* Middle: Evaluation Form */}
+          <div className="lg:col-span-2 bg-gray-800 rounded-xl p-6">
+            {!selectedStudent ? (
+              <div className="text-center py-12 text-gray-500">
+                <svg className="w-16 h-16 mx-auto mb-4 opacity-50" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z" />
+                </svg>
+                <p>Select a student to start evaluating</p>
+              </div>
+            ) : (
+              <>
+                <div className="flex items-center justify-between mb-6">
+                  <h2 className="text-xl font-bold">Evaluating: {selectedStudent}</h2>
+                  
                   <select
-                    value={selectedStudent}
-                    onChange={(e) => {
-                      setSelectedStudent(e.target.value);
-                      loadStudentData(e.target.value);
-                    }}
-                    className="w-full px-4 py-2 border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-purple-accent"
+                    value={activeWeek}
+                    onChange={(e) => setActiveWeek(Number(e.target.value))}
+                    className="px-4 py-2 bg-gray-700 rounded-lg border border-gray-600 focus:border-purple-500 focus:outline-none"
                   >
-                    <option value="">Select a student</option>
-                    {students.map(s => (
-                      <option key={s} value={s}>{s}</option>
+                    {weeks.map((w) => (
+                      <option key={w} value={w}>Week {w}</option>
                     ))}
                   </select>
                 </div>
-                
-                <div className="grid grid-cols-2 gap-4">
-                  <div>
-                    <label className="block text-sm font-medium text-gray-700 mb-1">Test Marks</label>
-                    <input
-                      type="number"
-                      value={currentMetrics.testObtained}
-                      onChange={(e) => handleMetricChange("testObtained", Number(e.target.value))}
-                      className="w-full px-4 py-2 border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-purple-accent"
-                      placeholder="Obtained"
-                    />
-                  </div>
-                  <div>
-                    <label className="block text-sm font-medium text-gray-700 mb-1">Total</label>
-                    <input
-                      type="number"
-                      value={currentMetrics.testTotal}
-                      onChange={(e) => handleMetricChange("testTotal", Number(e.target.value))}
-                      className="w-full px-4 py-2 border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-purple-accent"
-                    />
-                  </div>
-                </div>
-              </div>
 
-              <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-4">
-                {[
-                  { key: "curiosity", label: "Curiosity" },
-                  { key: "understanding", label: "Understanding" },
-                  { key: "creativity", label: "Creativity" },
-                  { key: "problemSolving", label: "Problem Solving" },
-                ].map(({ key, label }) => (
-                  <div key={key}>
-                    <label className="block text-sm font-medium text-gray-700 mb-1">{label}</label>
-                    <input
-                      type="range"
-                      min="1"
-                      max="5"
-                      value={currentMetrics[key as keyof typeof currentMetrics]}
-                      onChange={(e) => handleMetricChange(key, Number(e.target.value))}
-                      className="w-full"
-                    />
-                    <div className="text-center text-sm text-gray-600">
-                      {currentMetrics[key as keyof typeof currentMetrics]}/5
+                {/* Test Scores */}
+                <div className="mb-6">
+                  <h3 className="font-semibold mb-3 text-purple-400">Test Scores</h3>
+                  <div className="grid grid-cols-3 gap-4">
+                    <div>
+                      <label className="block text-sm text-gray-400 mb-1">Obtained</label>
+                      <input
+                        type="number"
+                        value={currentMetrics.testObtained}
+                        onChange={(e) => handleMetricChange("testObtained", Number(e.target.value))}
+                        className="w-full px-3 py-2 bg-gray-700 rounded-lg border border-gray-600 focus:border-purple-500 focus:outline-none"
+                      />
                     </div>
-                  </div>
-                ))}
-              </div>
-
-              <div className="mb-4">
-                <label className="block text-sm font-medium text-gray-700 mb-1">Notes (optional)</label>
-                <textarea
-                  value={notes}
-                  onChange={(e) => setNotes(e.target.value)}
-                  className="w-full px-4 py-2 border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-purple-accent"
-                  rows={2}
-                  placeholder="Any observations..."
-                />
-              </div>
-
-              <button
-                onClick={saveEvaluation}
-                disabled={!selectedStudent}
-                className="px-6 py-2 bg-purple-accent text-white rounded-lg hover:bg-purple-accent/90 disabled:opacity-50 disabled:cursor-not-allowed"
-              >
-                Save Evaluation
-              </button>
-            </div>
-          )}
-
-          {/* Student Selector (Both Views) */}
-          {students.length > 0 && (
-            <div className="bg-white rounded-xl border border-gray-200 p-4 mb-6">
-              <div className="flex items-center gap-4">
-                <span className="text-sm font-medium text-gray-700">Viewing:</span>
-                <select
-                  value={selectedStudent}
-                  onChange={(e) => setSelectedStudent(e.target.value)}
-                  className="flex-1 max-w-xs px-4 py-2 border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-purple-accent"
-                >
-                  <option value="">All Students</option>
-                  {students.map(s => (
-                    <option key={s} value={s}>{s}</option>
-                  ))}
-                </select>
-              </div>
-            </div>
-          )}
-
-          {/* Student Dashboards */}
-          <div className="mb-4">
-            <h2 className="text-lg font-bold mb-4">
-              Week {activeWeek} - Student Performance
-            </h2>
-          </div>
-
-          {loading ? (
-            <div className="bg-white rounded-xl border border-gray-200 p-8 text-center">
-              <p className="text-gray-500">Loading...</p>
-            </div>
-          ) : students.length === 0 ? (
-            <div className="bg-white rounded-xl border border-gray-200 p-8 text-center">
-              <p className="text-gray-500">
-                {isTeacherView 
-                  ? "No students added yet. Add students above to start evaluating." 
-                  : "No evaluation data available yet."}
-              </p>
-              {isTeacherView && (
-                <p className="text-sm text-gray-400 mt-2">Add URL parameter ?view=teacher&pwd=your_password to access teacher view</p>
-              )}
-            </div>
-          ) : (
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-              {students
-                .filter(s => !selectedStudent || s === selectedStudent)
-                .map(studentName => {
-                const evalData = getStudentEvaluation(studentName, activeWeek);
-                const metrics = evalData ? {
-                  testObtained: evalData.test_obtained,
-                  testTotal: evalData.test_total,
-                  testPercentage: evalData.test_percentage,
-                  curiosity: evalData.curiosity,
-                  understanding: evalData.understanding,
-                  creativity: evalData.creativity,
-                  problemSolving: evalData.problem_solving,
-                } : null;
-                const totalScore = metrics ? calculateWeekTotal(metrics) : 0;
-                const segments = metrics ? getPieChartSegments(metrics) : [];
-                
-                return (
-                  <div 
-                    key={studentName}
-                    className={`bg-white rounded-xl border-2 ${evalData ? 'border-purple-200' : 'border-gray-200'} overflow-hidden`}
-                  >
-                    <div className={`${evalData ? 'bg-purple-50' : 'bg-gray-50'} px-4 py-3 border-b border-gray-200`}>
-                      <div className="flex items-center justify-between">
-                        <h3 className="font-bold text-gray-800">{studentName}</h3>
-                        {evalData && (
-                          <span className={`px-2 py-1 rounded-full text-xs font-bold text-white ${getPerformanceColor(totalScore)}`}>
-                            {totalScore}%
-                          </span>
-                        )}
+                    <div>
+                      <label className="block text-sm text-gray-400 mb-1">Total</label>
+                      <input
+                        type="number"
+                        value={currentMetrics.testTotal}
+                        onChange={(e) => handleMetricChange("testTotal", Number(e.target.value))}
+                        className="w-full px-3 py-2 bg-gray-700 rounded-lg border border-gray-600 focus:border-purple-500 focus:outline-none"
+                      />
+                    </div>
+                    <div>
+                      <label className="block text-sm text-gray-400 mb-1">Percentage</label>
+                      <div className="px-3 py-2 bg-gray-600 rounded-lg text-center">
+                        {currentMetrics.testPercentage}%
                       </div>
                     </div>
-
-                    <div className="p-4">
-                      {!evalData ? (
-                        <p className="text-gray-500 text-center py-4">No evaluation yet</p>
-                      ) : (
-                        <>
-                          {/* Test Score */}
-                          <div className="mb-3">
-                            <div className="flex justify-between text-sm">
-                              <span className="text-gray-600">Test</span>
-                              <span className="font-medium">
-                                {metrics?.testObtained}/{metrics?.testTotal} ({metrics?.testPercentage}%)
-                              </span>
-                            </div>
-                            <div className="w-full bg-gray-200 rounded-full h-2 mt-1">
-                              <div 
-                                className="bg-purple-500 h-2 rounded-full" 
-                                style={{ width: `${metrics?.testPercentage}%` }}
-                              />
-                            </div>
-                          </div>
-
-                          {/* Other Metrics */}
-                          <div className="space-y-2 mb-4">
-                            {[
-                              { key: "curiosity", label: "Curiosity", color: "bg-blue-500" },
-                              { key: "understanding", label: "Understanding", color: "bg-green-500" },
-                              { key: "creativity", label: "Creativity", color: "bg-yellow-500" },
-                              { key: "problemSolving", label: "Problem Solving", color: "bg-red-500" },
-                            ].map(({ key, label, color }) => (
-                              <div key={key} className="flex items-center justify-between">
-                                <span className="text-sm text-gray-600">{label}</span>
-                                <div className="flex items-center gap-2">
-                                  <div className="w-16 bg-gray-200 rounded-full h-2">
-                                    <div 
-                                      className={`${color} h-2 rounded-full`} 
-                                      style={{ width: `${(metrics?.[key as keyof typeof metrics] as number / 5) * 100}%` }}
-                                    />
-                                  </div>
-                                  <span className="text-sm font-medium w-6">{metrics?.[key as keyof typeof metrics]}</span>
-                                </div>
-                              </div>
-                            ))}
-                          </div>
-
-                          {/* Pie Chart */}
-                          {segments.length > 0 && (
-                            <div className="flex justify-center mb-3">
-                              <div className="relative w-24 h-24">
-                                <svg viewBox="0 0 36 36" className="w-24 h-24 transform -rotate-90">
-                                  {segments.map((seg, i) => {
-                                    const radius = 16;
-                                    const circumference = 2 * Math.PI * radius;
-                                    const offset = (seg.startAngle / 360) * circumference;
-                                    const length = ((seg.endAngle - seg.startAngle) / 360) * circumference;
-                                    return (
-                                      <circle
-                                        key={i}
-                                        cx="18"
-                                        cy="18"
-                                        r={radius}
-                                        fill="transparent"
-                                        stroke={seg.color}
-                                        strokeWidth="3"
-                                        strokeDasharray={`${length} ${circumference - length}`}
-                                        strokeDashoffset={-offset}
-                                      />
-                                    );
-                                  })}
-                                </svg>
-                                <div className="absolute inset-0 flex items-center justify-center">
-                                  <span className="text-xs font-bold text-gray-700">{totalScore}%</span>
-                                </div>
-                              </div>
-                            </div>
-                          )}
-
-                          {/* Legend */}
-                          <div className="flex flex-wrap justify-center gap-2 text-xs">
-                            {segments.map((seg, i) => (
-                              <span key={i} className="flex items-center gap-1">
-                                <span className="w-2 h-2 rounded-full" style={{ backgroundColor: seg.color }} />
-                                {seg.label}
-                              </span>
-                            ))}
-                          </div>
-                        </>
-                      )}
-                    </div>
                   </div>
-                );
-              })}
-            </div>
-          )}
+                </div>
+
+                {/* Soft Skills */}
+                <div className="mb-6">
+                  <h3 className="font-semibold mb-3 text-purple-400">Soft Skills (1-5)</h3>
+                  <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
+                    {[
+                      { key: "curiosity", label: "Curiosity" },
+                      { key: "understanding", label: "Understanding" },
+                      { key: "creativity", label: "Creativity" },
+                      { key: "problemSolving", label: "Problem Solving" },
+                    ].map(({ key, label }) => (
+                      <div key={key}>
+                        <label className="block text-sm text-gray-400 mb-1">{label}</label>
+                        <input
+                          type="range"
+                          min="1"
+                          max="5"
+                          value={currentMetrics[key as keyof typeof currentMetrics] as number}
+                          onChange={(e) => handleMetricChange(key, Number(e.target.value))}
+                          className="w-full accent-purple-500"
+                        />
+                        <div className="text-center text-sm text-gray-300">
+                          {currentMetrics[key as keyof typeof currentMetrics]}
+                        </div>
+                      </div>
+                    ))}
+                  </div>
+                </div>
+
+                {/* Notes */}
+                <div className="mb-6">
+                  <label className="block text-sm text-gray-400 mb-1">Notes</label>
+                  <textarea
+                    value={notes}
+                    onChange={(e) => setNotes(e.target.value)}
+                    placeholder="Add notes about this student's performance..."
+                    className="w-full px-3 py-2 bg-gray-700 rounded-lg border border-gray-600 focus:border-purple-500 focus:outline-none h-24 resize-none"
+                  />
+                </div>
+
+                <button
+                  onClick={saveEvaluation}
+                  className="w-full py-3 bg-purple-600 hover:bg-purple-700 rounded-lg font-bold text-lg"
+                >
+                  Save Evaluation
+                </button>
+              </>
+            )}
+          </div>
         </div>
-      </main>
+
+        {/* Student Summary */}
+        {students.length > 0 && (
+          <div className="mt-8 bg-gray-800 rounded-xl p-6">
+            <h2 className="text-xl font-bold mb-4">Evaluation Summary</h2>
+            <div className="overflow-x-auto">
+              <table className="w-full">
+                <thead>
+                  <tr className="text-left border-b border-gray-700">
+                    <th className="pb-3 text-gray-400">Student</th>
+                    {weeks.map((w) => (
+                      <th key={w} className="pb-3 text-gray-400 text-center">W{w}</th>
+                    ))}
+                    <th className="pb-3 text-gray-400 text-center">Avg</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {students.map((student) => {
+                    const percentages: number[] = [];
+                    weeks.forEach((w) => {
+                      const evalData = getEvaluation(student, w);
+                      if (evalData) percentages.push(evalData.test_percentage);
+                    });
+                    const avg = percentages.length > 0
+                      ? Math.round(percentages.reduce((a, b) => a + b, 0) / percentages.length)
+                      : 0;
+                    
+                    return (
+                      <tr key={student} className="border-b border-gray-700/50">
+                        <td className="py-3 font-medium">{student}</td>
+                        {weeks.map((w) => {
+                          const evalData = getEvaluation(student, w);
+                          return (
+                            <td key={w} className="py-3 text-center">
+                              {evalData ? (
+                                <span className={`px-2 py-1 rounded text-sm ${
+                                  evalData.test_percentage >= 70 ? "bg-green-600" : "bg-yellow-600"
+                                }`}>
+                                  {evalData.test_percentage}%
+                                </span>
+                              ) : (
+                                <span className="text-gray-600">-</span>
+                              )}
+                            </td>
+                          );
+                        })}
+                        <td className="py-3 text-center font-bold">{avg}%</td>
+                      </tr>
+                    );
+                  })}
+                </tbody>
+              </table>
+            </div>
+          </div>
+        )}
+      </div>
     </div>
   );
 }
