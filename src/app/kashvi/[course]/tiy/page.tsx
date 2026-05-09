@@ -152,6 +152,20 @@ export default function TIYPage() {
               </svg>
               {!isMinimized && <span className="text-sm font-medium truncate">Try It Yourself</span>}
             </button>
+
+            <div className={`border-t border-gray-700 my-2 ${isMinimized ? 'w-8 mx-auto' : ''}`} />
+
+            <button
+              onClick={() => window.location.href = `/kashvi/${course}/tiy/quiz`}
+              className={`w-full flex items-center gap-3 p-2 rounded-lg hover:bg-surface-container-high transition-colors ${
+                isMinimized ? "justify-center" : ""
+              }`}
+            >
+              <svg className="w-5 h-5 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
+              </svg>
+              {!isMinimized && <span className="text-sm font-medium truncate">Quiz</span>}
+            </button>
           </nav>
         </div>
       </aside>
@@ -199,6 +213,32 @@ export default function TIYPage() {
                 </Link>
               );
             })}
+
+            {/* Quiz Section */}
+            <Link
+              href={`/kashvi/${course}/tiy/quiz`}
+              className="block p-6 rounded-xl border-2 border-purple-300 bg-purple-50 hover:shadow-lg transition-shadow cursor-pointer"
+            >
+              <div className="flex items-center gap-3 mb-4">
+                <span className="text-4xl">🎯</span>
+                <div>
+                  <h2 className="text-xl font-bold text-gray-800">Quiz</h2>
+                  <span className="inline-block px-2 py-1 rounded-full text-xs font-bold bg-purple-100 text-purple-700">
+                    Test
+                  </span>
+                </div>
+              </div>
+              <div className="space-y-2">
+                <div className="flex items-center gap-2 text-gray-600 text-sm">
+                  <span>✅</span>
+                  <span>Quiz 1</span>
+                </div>
+                <div className="flex items-center gap-2 text-gray-400 text-sm">
+                  <span>📋</span>
+                  <span>Quiz 2 (Coming Soon)</span>
+                </div>
+              </div>
+            </Link>
           </div>
         </div>
       </main>
